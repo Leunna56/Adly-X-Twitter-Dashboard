@@ -30,6 +30,7 @@
   .kpi-card .value{font-size:32px;font-weight:700;line-height:1}
   .kpi-card .sub{font-size:11px;color:var(--muted);margin-top:4px}
   .kpi-card.blue .value{color:var(--blue)}.kpi-card.purple .value{color:var(--purple)}.kpi-card.green .value{color:var(--green)}.kpi-card.amber .value{color:var(--amber)}
+  .kpi-card{position:relative}.kpi-info{position:absolute;top:12px;right:12px;width:16px;height:16px;background:#2e3250;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#8b90b8;cursor:default;user-select:none}.kpi-tooltip{display:none;position:absolute;top:36px;right:0;width:230px;background:#12151f;border:1px solid #3a3f6e;border-radius:8px;padding:12px;font-size:12px;color:#c8cfe8;line-height:1.6;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.6)}.kpi-tooltip strong{color:#e8eaf6;display:block;margin-bottom:6px;font-size:12px}.kpi-tooltip .formula{background:#1e2235;padding:6px 8px;border-radius:5px;font-size:11px;color:#7F77DD;margin-top:6px;font-family:monospace}.kpi-card:hover .kpi-tooltip{display:block}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
   .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
   .card h3{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
@@ -91,10 +92,10 @@
   <div id="noDataBanner" class="no-data-banner" style="display:none">&#128269; No data logged for this period yet. Data collection started May 26, 2026.</div>
   <div id="dataSection">
   <div class="kpi-grid">
-    <div class="kpi-card blue"><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies in Sheet1</div></div>
-    <div class="kpi-card purple"><div class="label">Total Impressions</div><div class="value">594</div><div class="sub">across all logged posts</div></div>
-    <div class="kpi-card green"><div class="label">Avg Engagement Rate</div><div class="value">17.8%</div><div class="sub">likes + replies / impressions</div></div>
-    <div class="kpi-card amber"><div class="label">Active Members</div><div class="value">3 / 4</div><div class="sub">Olibher &middot; Jes &middot; Jen logging</div></div>
+    <div class="kpi-card blue"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Total Actions Logged</strong>The total number of posts and replies your team recorded in Sheet1 for this period. Each row = one action.<div class="formula">Count of all rows in Sheet1</div></div></div><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies in Sheet1</div></div>
+    <div class="kpi-card purple"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Total Impressions</strong>How many times your team's posts were seen in total across all accounts and brands this period.<div class="formula">Sum of Impressions column in Sheet1</div></div></div><div class="label">Total Impressions</div><div class="value">594</div><div class="sub">across all logged posts</div></div>
+    <div class="kpi-card green"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Avg Engagement Rate (ER)</strong>Measures how much people interacted with a post relative to how many saw it. Higher = content is resonating.<div class="formula">(Likes + Replies) ÷ Impressions × 100</div></div></div><div class="label">Avg Engagement Rate</div><div class="value">17.8%</div><div class="sub">likes + replies / impressions</div></div>
+    <div class="kpi-card amber"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Active Members</strong>Number of team members who logged at least one post or reply in Sheet1 this period. Missing = no entries found.<div class="formula">Count of distinct team members in Sheet1</div></div></div><div class="label">Active Members</div><div class="value">3 / 4</div><div class="sub">Olibher &middot; Jes &middot; Jen logging</div></div>
   </div>
   <div class="grid-2">
     <div class="card"><h3>Impressions by Team Member</h3><div class="chart-wrap"><canvas id="impChart"></canvas></div></div>
