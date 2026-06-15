@@ -87,19 +87,71 @@
     <button class="biweekly-btn" id="btnPrev" onclick="changePeriod(-1)">&#9668; Previous</button>
   </div>
 </div>
-<div class="alert-banner">&#9888;&#65039; <strong>Data Gap:</strong> Leah&rsquo;s @lestrada_8_3 posts are not yet logged in Sheet1. Add them to get a complete picture.</div>
+<div class="alert-banner">&#9888;&#65039; <strong>Data Gap:</strong> Leah&rsquo;s @lestrada_8_3 posts are not yet logged. Add them to get a complete picture.</div>
 <div class="container">
   <div id="noDataBanner" class="no-data-banner" style="display:none">&#128269; No data logged for this period yet. Data collection started May 26, 2026.</div>
   <div id="dataSection">
   <div class="kpi-grid">
-    <div class="kpi-card blue"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Total Actions Logged</strong>The total number of posts and replies your team recorded for this period. Each row = one action.<div class="formula">Count of all rows logged</div></div></div><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies in Sheet1</div></div>
+    <div class="kpi-card blue"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Total Actions Logged</strong>The total number of posts and replies your team recorded for this period. Each row = one action.<div class="formula">Count of all rows logged</div></div></div><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies logged</div></div>
     <div class="kpi-card purple"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Total Impressions</strong>How many times your team's posts were seen in total across all accounts and brands this period.<div class="formula">Sum of Impressions column</div></div></div><div class="label">Total Impressions</div><div class="value">594</div><div class="sub">across all logged posts</div></div>
     <div class="kpi-card green"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Avg Engagement Rate (ER)</strong>Measures how much people interacted with a post relative to how many saw it. Higher = content is resonating.<div class="formula">(Likes + Replies) ÷ Impressions × 100</div></div></div><div class="label">Avg Engagement Rate</div><div class="value">17.8%</div><div class="sub">likes + replies / impressions</div></div>
     <div class="kpi-card amber"><div class="kpi-info">i<div class="kpi-tooltip"><strong>Active Members</strong>Number of team members who logged at least one post or reply this period. Missing = no entries found.<div class="formula">Count of distinct team members</div></div></div><div class="label">Active Members</div><div class="value">3 / 4</div><div class="sub">Olibher &middot; Jes &middot; Jen logging</div></div>
   </div>
   <div class="grid-2">
     <div class="card"><h3>Impressions by Team Member</h3><div class="chart-wrap"><canvas id="impChart"></canvas></div></div>
-    <div class="card"><h3>ER vs. Volume (Bubble)</h3><div class="chart-wrap"><canvas id="bubbleChart"></canvas></div></div>
+    <div class="card">
+      <h3>Posts vs. Engagement Rate — By Member</h3>
+      <div style="display:flex;flex-direction:column;gap:16px;padding:8px 0;">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:600;color:#e8eaf6;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#7F77DD;margin-right:7px;vertical-align:middle;"></span>Olibher</span>
+            <span style="font-size:11px;color:#8b90b8;">Most posts · lower ER</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">Posts</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:100%;height:100%;background:#7F77DD;border-radius:4px;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:24px;text-align:right;">28</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">ER</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:73%;height:100%;background:#7F77DD;border-radius:4px;opacity:0.7;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:40px;text-align:right;">15.4%</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #1e2235;padding-top:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:600;color:#e8eaf6;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#1D9E75;margin-right:7px;vertical-align:middle;"></span>Jes</span>
+            <span style="font-size:11px;color:#1D9E75;font-weight:600;">⭐ Best ER this period</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">Posts</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:79%;height:100%;background:#1D9E75;border-radius:4px;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:24px;text-align:right;">22</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">ER</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:100%;height:100%;background:#1D9E75;border-radius:4px;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:40px;text-align:right;">21.2%</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #1e2235;padding-top:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:600;color:#e8eaf6;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#BA7517;margin-right:7px;vertical-align:middle;"></span>Jen</span>
+            <span style="font-size:11px;color:#8b90b8;">Solid ER · needs more posts</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">Posts</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:50%;height:100%;background:#BA7517;border-radius:4px;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:24px;text-align:right;">14</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:#8b90b8;width:42px;">ER</span>
+            <div style="flex:1;height:7px;background:#1e2235;border-radius:4px;"><div style="width:88%;height:100%;background:#BA7517;border-radius:4px;opacity:0.8;"></div></div>
+            <span style="font-size:12px;font-weight:700;color:#e8eaf6;width:40px;text-align:right;">18.7%</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="grid-2">
     <div class="card"><h3>Brand Performance &mdash; Impressions</h3><div class="chart-wrap"><canvas id="brandChart"></canvas></div></div>
@@ -144,7 +196,7 @@
   <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;">&#128161; Key Findings</div>
   <div class="findings-grid">
     <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with Nate&rsquo;s brief &mdash; jumping into termination/freeze conversations with empathy first builds credibility faster. The team should target high-traffic fintech and SaaS threads daily, especially Stripe-related pain signals.</p></div>
-    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is logged in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. This dashboard refreshes bi-weekly from Sheet1. All team members must log posts promptly &mdash; especially Leah, whose @lestrada_8_3 (SendScale) data is currently missing entirely.</p></div>
+    <div class="finding-card blue"><h4>&#128202; How This Dashboard Gets Its Data</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is logged in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. This dashboard refreshes bi-weekly from Sheet1. All team members must log posts promptly &mdash; especially Leah, whose @lestrada_8_3 (SendScale) data is currently missing entirely.</p></div>
   </div>
   </div>
 </div>
