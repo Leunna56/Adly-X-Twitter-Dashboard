@@ -45,9 +45,9 @@
   .badge.active{background:#0e2a1e;color:var(--green)}.badge.missing{background:#2a1a0e;color:var(--amber)}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
   .item-list{list-style:none}
-  .item-list li{padding:9px 0;border-bottom:1px solid #1e2235;font-size:13px;display:flex;gap:8px}
+  .item-list li{padding:9px 0;border-bottom:1px solid #1e2235;font-size:13px;display:flex;gap:8px;align-items:flex-start}
   .item-list li:last-child{border-bottom:none}
-  .item-list li::before{content:attr(data-icon);flex-shrink:0}
+  .item-list li::before{content:attr(data-icon);flex-shrink:0;margin-top:1px}
   .findings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
   .finding-card{border-radius:10px;padding:18px}
   .finding-card.green{background:#0a1f16;border:1px solid #1a5c3a}
@@ -121,28 +121,29 @@
     </div>
   </div>
   <div class="two-col" style="margin-bottom:14px;">
-    <div class="card"><h3>&#127919; Opportunities</h3>
+    <div class="card"><h3>&#127919; Opportunities &mdash; PaymentKit</h3>
       <ul class="item-list">
-        <li data-icon="&#128200;">Reply strategy is outperforming original posts &mdash; scale up comment engagement on trending fintech threads</li>
-        <li data-icon="&#127991;&#65039;">SubDelete accounts have the highest ER (21%+) &mdash; double down on subscription-pain content</li>
-        <li data-icon="&#128336;">Peak impressions on weekday mornings &mdash; schedule priority posts between 8&ndash;10am</li>
-        <li data-icon="&#128279;">SendScale has 2 accounts with no handles yet &mdash; set these up to unlock that brand&rsquo;s potential</li>
+        <li data-icon="&#128293;"><strong>Termination/freeze chatter</strong> &mdash; Search &ldquo;stripe shut down,&rdquo; &ldquo;stripe froze,&rdquo; &ldquo;processor dropped us,&rdquo; &ldquo;lost my merchant account.&rdquo; Reply with empathy first, no brand mention until they ask.</li>
+        <li data-icon="&#128640;"><strong>Stripe-escapee chatter</strong> &mdash; Founders posting about outgrowing Stripe, wanting multi-PSP. Pattern: relate &rarr; insight &rarr; mention PK only if asked.</li>
+        <li data-icon="&#9889;"><strong>Adjacent operator pain</strong> &mdash; Engage on chargeback rates, auth-rate drops, MID downtime, dunning failures. Lead with our stat: 22% auth lift, 5% conversion lift on migration.</li>
+        <li data-icon="&#128221;"><strong>Original post themes</strong> &mdash; Processor concentration risk, independent vault, the &ldquo;decline pile&rdquo; PSPs throw away. Post daily 8&ndash;9am per strategy cadence.</li>
       </ul>
     </div>
-    <div class="card"><h3>&#9989; Action Items</h3>
+    <div class="card"><h3>&#9989; Action Items &mdash; This Period</h3>
       <ul class="item-list">
-        <li data-icon="&#128308;">Leah: log @lestrada_8_3 posts into Sheet1 immediately</li>
-        <li data-icon="&#128993;">Nate: confirm X Premium decision for Brand + Founder accounts</li>
+        <li data-icon="&#128308;">Leah: log @lestrada_8_3 posts into Sheet1 &mdash; SendScale has zero data this period</li>
+        <li data-icon="&#128308;">Team: set up saved search columns in TweetDeck for HIGH terms (stripe shut down, processor dropped us, adyen terminated)</li>
+        <li data-icon="&#128993;">Nate: confirm X Premium for Brand + Founder accounts before next check-in</li>
         <li data-icon="&#128993;">Team: fill in missing SendScale account handles in the Account Directory</li>
-        <li data-icon="&#128994;">All: target 20+ posts per member before next bi-weekly check-in</li>
-        <li data-icon="&#128994;">Olibher: boost engagement by commenting on 5 competitor threads/day</li>
+        <li data-icon="&#128994;">All: follow daily cadence &mdash; 8&ndash;9am original post, 12&ndash;1pm reply block, 4&ndash;6pm second sweep</li>
+        <li data-icon="&#128994;">Olibher/Jen: prioritize high-risk verticals &mdash; nutra, telehealth, iGaming, crypto founders on X</li>
       </ul>
     </div>
   </div>
   <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;">&#128161; Key Findings</div>
   <div class="findings-grid">
-    <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with best practices for new X accounts in the warm-up phase &mdash; jumping into active conversations builds credibility faster than posting into the void. Target high-traffic fintech and SaaS threads daily.</p></div>
-    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is logged in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. This dashboard reads from Sheet1 and will be refreshed bi-weekly. All team members must log posts promptly &mdash; especially Leah, whose @lestrada_8_3 data is currently missing.</p></div>
+    <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with Nate&rsquo;s brief &mdash; jumping into termination/freeze conversations with empathy first builds credibility faster than original posts. The team should target high-traffic fintech and SaaS threads daily, especially Stripe-related pain signals.</p></div>
+    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is logged in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. This dashboard refreshes bi-weekly from Sheet1. All team members must log posts promptly &mdash; especially Leah, whose @lestrada_8_3 (SendScale) data is currently missing entirely.</p></div>
   </div>
   </div>
 </div>
@@ -162,8 +163,7 @@ function changePeriod(dir){
   document.querySelector('.biweekly-prev-range').textContent=p.prev;
   document.getElementById('btnPrev').style.display=periodIdx>0?'':'none';
   document.getElementById('btnNext').style.display=periodIdx<periods.length-1?'':'none';
-  const ds=document.getElementById('dataSection');
-  const nb=document.getElementById('noDataBanner');
+  const ds=document.getElementById('dataSection'),nb=document.getElementById('noDataBanner');
   if(p.hasData){ds.style.display='';nb.style.display='none';}
   else{ds.style.display='none';nb.style.display='';}
 }
