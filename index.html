@@ -6,21 +6,22 @@
 <title>Adly X/Twitter Team Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root{--bg:#0f1117;--card:#1a1d27;--card2:#21253a;--border:#2e3250;--text:#e8eaf6;--muted:#8b90b8;--accent:#5c6bc0;--green:#1D9E75;--amber:#BA7517;--red:#D85A30;--blue:#378ADD;--purple:#7F77DD;--teal:#1D9E75}
+  :root{--bg:#0f1117;--card:#1a1d27;--border:#2e3250;--text:#e8eaf6;--muted:#8b90b8;--green:#1D9E75;--amber:#BA7517;--blue:#378ADD;--purple:#7F77DD;--red:#D85A30}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
-  .header{background:linear-gradient(135deg,#1a1d27 0%,#21253a 100%);border-bottom:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
+  .header{background:linear-gradient(135deg,#1a1d27,#21253a);border-bottom:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
   .header h1{font-size:20px;font-weight:700}.header h1 span{color:var(--purple)}
   .header .meta{font-size:12px;color:var(--muted);text-align:right}
   .biweekly-bar{background:#fff;border-left:4px solid #e8520a;border-bottom:1px solid #e8e8e8;padding:10px 28px;display:flex;justify-content:space-between;align-items:center}
   .biweekly-left{display:flex;align-items:center;gap:10px}
-  .biweekly-icon{font-size:16px}
   .biweekly-title{font-size:13px;font-weight:700;color:#1a1a1a}
   .biweekly-dates{font-size:12px;color:#444;margin-top:2px}
   .biweekly-vs{color:#999;margin:0 6px;font-style:italic}
   .biweekly-prev-range{color:#888}
+  .biweekly-nav{display:flex;gap:8px}
   .biweekly-btn{background:#fff;border:1px solid #d0d0d0;color:#333;font-size:12px;font-weight:600;padding:5px 14px;border-radius:4px;cursor:pointer}
   .biweekly-btn:hover{background:#f5f5f5}
+  .no-data-banner{background:var(--card);border:1px dashed var(--border);border-radius:10px;padding:32px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:14px}
   .alert-banner{background:#2a1f0e;border-left:4px solid var(--amber);padding:10px 28px;display:flex;align-items:center;gap:8px;font-size:13px;color:#e8c97a}
   .container{padding:20px 28px;max-width:1400px;margin:0 auto}
   .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
@@ -74,16 +75,21 @@
 </div>
 <div class="biweekly-bar">
   <div class="biweekly-left">
-    <span class="biweekly-icon">&#128203;</span>
+    <span style="font-size:16px">&#128203;</span>
     <div>
       <div class="biweekly-title">Bi-Weekly Summary</div>
       <div class="biweekly-dates"><strong>Jun 1, 2026 &ndash; Jun 14, 2026</strong><span class="biweekly-vs">vs</span><span class="biweekly-prev-range">May 18, 2026 &ndash; May 31, 2026</span></div>
     </div>
   </div>
-  <button class="biweekly-btn">&#9668; Previous</button>
+  <div class="biweekly-nav">
+    <button class="biweekly-btn" id="btnNext" onclick="changePeriod(1)" style="display:none">Next &#9658;</button>
+    <button class="biweekly-btn" id="btnPrev" onclick="changePeriod(-1)">&#9668; Previous</button>
+  </div>
 </div>
 <div class="alert-banner">&#9888;&#65039; <strong>Data Gap:</strong> Leah&rsquo;s @lestrada_8_3 posts are not yet logged in Sheet1. Add them to get a complete picture.</div>
 <div class="container">
+  <div id="noDataBanner" class="no-data-banner" style="display:none">&#128269; No data logged for this period yet. Data collection started May 26, 2026.</div>
+  <div id="dataSection">
   <div class="kpi-grid">
     <div class="kpi-card blue"><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies in Sheet1</div></div>
     <div class="kpi-card purple"><div class="label">Total Impressions</div><div class="value">594</div><div class="sub">across all logged posts</div></div>
@@ -119,7 +125,7 @@
       <ul class="item-list">
         <li data-icon="&#128200;">Reply strategy is outperforming original posts &mdash; scale up comment engagement on trending fintech threads</li>
         <li data-icon="&#127991;&#65039;">SubDelete accounts have the highest ER (21%+) &mdash; double down on subscription-pain content</li>
-        <li data-icon="&#128336;">Peak impressions occur on weekday mornings &mdash; schedule priority posts between 8&ndash;10am</li>
+        <li data-icon="&#128336;">Peak impressions on weekday mornings &mdash; schedule priority posts between 8&ndash;10am</li>
         <li data-icon="&#128279;">SendScale has 2 accounts with no handles yet &mdash; set these up to unlock that brand&rsquo;s potential</li>
       </ul>
     </div>
@@ -135,8 +141,9 @@
   </div>
   <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;">&#128161; Key Findings</div>
   <div class="findings-grid">
-    <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with best practices for new X accounts in the warm-up phase &mdash; jumping into active conversations builds credibility and impressions faster than posting into the void. The team should intentionally target high-traffic fintech and SaaS threads daily.</p></div>
-    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is being logged directly in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. The Weekly Analytics Log tab is secondary. This dashboard reads from Sheet1 and will be refreshed bi-weekly. To keep dashboards accurate, all team members must log their posts promptly &mdash; especially Leah, whose @lestrada_8_3 data is currently missing.</p></div>
+    <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with best practices for new X accounts in the warm-up phase &mdash; jumping into active conversations builds credibility faster than posting into the void. Target high-traffic fintech and SaaS threads daily.</p></div>
+    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is logged in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. This dashboard reads from Sheet1 and will be refreshed bi-weekly. All team members must log posts promptly &mdash; especially Leah, whose @lestrada_8_3 data is currently missing.</p></div>
+  </div>
   </div>
 </div>
 <footer>Adly X/Twitter Team Dashboard &middot; Built June 15, 2026</footer>
@@ -146,5 +153,19 @@ new Chart(document.getElementById('impChart'),{type:'bar',data:{labels:['Olibher
 new Chart(document.getElementById('bubbleChart'),{type:'bubble',data:{datasets:[{label:'Olibher',data:[{x:28,y:15.4,r:12}],backgroundColor:C.o+'cc'},{label:'Jes',data:[{x:22,y:21.2,r:10}],backgroundColor:C.j+'cc'},{label:'Jen',data:[{x:14,y:18.7,r:8}],backgroundColor:C.n+'cc'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{title:{display:true,text:'Posts',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{title:{display:true,text:'Avg ER %',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
 new Chart(document.getElementById('brandChart'),{type:'bar',data:{labels:['PaymentKit','SubDelete','SendScale'],datasets:[{label:'Impressions',data:[318,242,34],backgroundColor:[C.pk,C.sd,C.j],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
 new Chart(document.getElementById('typeChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Original Posts',data:[12,8,6],backgroundColor:'#3a3f6e',borderRadius:4},{label:'Replies',data:[16,14,8],backgroundColor:C.o,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+const periods=[{current:'May 4, 2026 – May 17, 2026',prev:'Apr 20, 2026 – May 3, 2026',hasData:false},{current:'May 18, 2026 – May 31, 2026',prev:'May 4, 2026 – May 17, 2026',hasData:false},{current:'Jun 1, 2026 – Jun 14, 2026',prev:'May 18, 2026 – May 31, 2026',hasData:true}];
+let periodIdx=2;
+function changePeriod(dir){
+  periodIdx+=dir;
+  const p=periods[periodIdx];
+  document.querySelector('.biweekly-dates strong').textContent=p.current;
+  document.querySelector('.biweekly-prev-range').textContent=p.prev;
+  document.getElementById('btnPrev').style.display=periodIdx>0?'':'none';
+  document.getElementById('btnNext').style.display=periodIdx<periods.length-1?'':'none';
+  const ds=document.getElementById('dataSection');
+  const nb=document.getElementById('noDataBanner');
+  if(p.hasData){ds.style.display='';nb.style.display='none';}
+  else{ds.style.display='none';nb.style.display='';}
+}
 </script>
 </body></html>
