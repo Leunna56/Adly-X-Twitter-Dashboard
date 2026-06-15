@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adly X/Twitter Team Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0f1117;--card:#1a1d27;--card2:#21253a;--border:#2e3250;--text:#e8eaf6;--muted:#8b90b8;--accent:#5c6bc0;--green:#1D9E75;--amber:#BA7517;--red:#D85A30;--blue:#378ADD;--purple:#7F77DD;--teal:#1D9E75}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  .header{background:linear-gradient(135deg,#1a1d27 0%,#21253a 100%);border-bottom:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:20px;font-weight:700}
+  .header h1 span{color:var(--purple)}
+  .header .meta{font-size:12px;color:var(--muted);text-align:right}
+  .alert-banner{background:#2a1f0e;border-left:4px solid var(--amber);padding:10px 28px;display:flex;align-items:center;gap:8px;font-size:13px;color:#e8c97a}
+  .container{padding:20px 28px;max-width:1400px;margin:0 auto}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+  .kpi-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .kpi-card .value{font-size:32px;font-weight:700;line-height:1}
+  .kpi-card .sub{font-size:11px;color:var(--muted);margin-top:4px}
+  .kpi-card.blue .value{color:var(--blue)}.kpi-card.purple .value{color:var(--purple)}.kpi-card.green .value{color:var(--green)}.kpi-card.amber .value{color:var(--amber)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+  .card h3{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+  .chart-wrap{position:relative;height:200px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+  td{padding:10px;border-bottom:1px solid #1e2235;font-size:13px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .member-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .er-bar-wrap{display:flex;align-items:center;gap:8px}
+  .er-bar{height:6px;border-radius:3px;flex-shrink:0}
+  .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px}
+  .badge.active{background:#0e2a1e;color:var(--green)}.badge.missing{background:#2a1a0e;color:var(--amber)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .item-list{list-style:none}
+  .item-list li{padding:9px 0;border-bottom:1px solid #1e2235;font-size:13px;display:flex;gap:8px}
+  .item-list li:last-child{border-bottom:none}
+  .item-list li::before{content:attr(data-icon);flex-shrink:0}
+  .findings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .finding-card{border-radius:10px;padding:18px}
+  .finding-card.green{background:#0a1f16;border:1px solid #1a5c3a}
+  .finding-card.blue{background:#0a1628;border:1px solid #1a3a5c}
+  .finding-card h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+  .finding-card.green h4{color:var(--green)}.finding-card.blue h4{color:var(--blue)}
+  .finding-card p{font-size:13px;color:#c8cfe8;line-height:1.5}
+  .top-post{padding:10px 0;border-bottom:1px solid #1e2235}
+  .top-post:last-child{border-bottom:none}
+  .top-post .rank{font-size:20px;font-weight:800;color:var(--border);margin-right:10px}
+  .top-post .handle{font-size:11px;color:var(--muted)}
+  .top-post .stat{font-size:11px;color:var(--muted);margin-top:3px}
+  .top-post .stat strong{color:var(--text)}
+  footer{text-align:center;padding:20px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:8px}
+  @media(max-width:900px){.kpi-grid{grid-template-columns:1fr 1fr}.grid-2,.two-col,.findings-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Adly <span>X / Twitter</span> Team Dashboard</h1>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;">Data: Sheet1 &middot; May 26 &ndash; June 12, 2026 &middot; 64 post entries</div>
+  </div>
+  <div class="meta">Updated June 15, 2026<br><span style="color:var(--amber);">&#9889; Bi-weekly</span></div>
+</div>
+<div class="alert-banner">&#9888;&#65039; <strong>Data Gap:</strong> Leah&rsquo;s @lestrada_8_3 posts are not yet logged in Sheet1. Add them to get a complete picture.</div>
+<div class="container">
+  <div class="kpi-grid">
+    <div class="kpi-card blue"><div class="label">Total Actions Logged</div><div class="value">64</div><div class="sub">posts + replies in Sheet1</div></div>
+    <div class="kpi-card purple"><div class="label">Total Impressions</div><div class="value">594</div><div class="sub">across all logged posts</div></div>
+    <div class="kpi-card green"><div class="label">Avg Engagement Rate</div><div class="value">17.8%</div><div class="sub">likes + replies / impressions</div></div>
+    <div class="kpi-card amber"><div class="label">Active Members</div><div class="value">3 / 4</div><div class="sub">Olibher &middot; Jes &middot; Jen logging</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>Impressions by Team Member</h3><div class="chart-wrap"><canvas id="impChart"></canvas></div></div>
+    <div class="card"><h3>ER vs. Volume (Bubble)</h3><div class="chart-wrap"><canvas id="bubbleChart"></canvas></div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>Brand Performance &mdash; Impressions</h3><div class="chart-wrap"><canvas id="brandChart"></canvas></div></div>
+    <div class="card"><h3>Posts vs. Replies by Member</h3><div class="chart-wrap"><canvas id="typeChart"></canvas></div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:14px;">
+    <div class="card"><h3>Team Productivity &amp; Performance</h3>
+      <table><thead><tr><th>Member</th><th>Posts</th><th>Impressions</th><th>Avg ER</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="member-dot" style="background:#7F77DD"></span>Olibher</td><td>28</td><td>262</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:52px;background:#7F77DD"></div>15.4%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#1D9E75"></span>Jes</td><td>22</td><td>198</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:64px;background:#1D9E75"></div>21.2%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#BA7517"></span>Jen</td><td>14</td><td>134</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:56px;background:#BA7517"></div>18.7%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#555"></span>Leah</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td><span class="badge missing">Missing</span></td></tr>
+      </tbody></table>
+    </div>
+    <div class="card"><h3>Top 3 Performing Posts</h3>
+      <div class="top-post"><span class="rank">#1</span><div style="display:inline-block;vertical-align:top"><div class="handle">@buildwithpurple &middot; SubDelete</div><div style="font-size:13px;margin:3px 0">&ldquo;Delete your unwanted subscriptions in 60 seconds...&rdquo;</div><div class="stat"><strong>94</strong> impressions &middot; <strong>31%</strong> ER</div></div></div>
+      <div class="top-post"><span class="rank">#2</span><div style="display:inline-block;vertical-align:top"><div class="handle">@COlibher &middot; PaymentKit</div><div style="font-size:13px;margin:3px 0">&ldquo;Payment infrastructure that actually scales...&rdquo;</div><div class="stat"><strong>78</strong> impressions &middot; <strong>26%</strong> ER</div></div></div>
+      <div class="top-post"><span class="rank">#3</span><div style="display:inline-block;vertical-align:top"><div class="handle">@CalebSmith8oea1 &middot; SubDelete</div><div style="font-size:13px;margin:3px 0">&ldquo;Replying to other fintech conversations is driving...&rdquo;</div><div class="stat"><strong>71</strong> impressions &middot; <strong>24%</strong> ER</div></div></div>
+    </div>
+  </div>
+  <div class="two-col" style="margin-bottom:14px;">
+    <div class="card"><h3>&#127919; Opportunities</h3>
+      <ul class="item-list">
+        <li data-icon="&#128200;">Reply strategy is outperforming original posts &mdash; scale up comment engagement on trending fintech threads</li>
+        <li data-icon="&#127991;&#65039;">SubDelete accounts have the highest ER (21%+) &mdash; double down on subscription-pain content</li>
+        <li data-icon="&#128336;">Peak impressions occur on weekday mornings &mdash; schedule priority posts between 8&ndash;10am</li>
+        <li data-icon="&#128279;">SendScale has 2 accounts with no handles yet &mdash; set these up to unlock that brand&rsquo;s potential</li>
+      </ul>
+    </div>
+    <div class="card"><h3>&#9989; Action Items</h3>
+      <ul class="item-list">
+        <li data-icon="&#128308;">Leah: log @lestrada_8_3 posts into Sheet1 immediately</li>
+        <li data-icon="&#128993;">Nate: confirm X Premium decision for Brand + Founder accounts</li>
+        <li data-icon="&#128993;">Team: fill in missing SendScale account handles in the Account Directory</li>
+        <li data-icon="&#128994;">All: target 20+ posts per member before next bi-weekly check-in</li>
+        <li data-icon="&#128994;">Olibher: boost engagement by commenting on 5 competitor threads/day</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;">&#128161; Key Findings</div>
+  <div class="findings-grid">
+    <div class="finding-card green"><h4>&#128260; Reply Strategy is Winning</h4><p>Across all logged actions, <strong>replies to existing threads are generating disproportionately high engagement</strong> compared to original posts. This aligns with best practices for new X accounts in the warm-up phase &mdash; jumping into active conversations builds credibility and impressions faster than posting into the void. The team should intentionally target high-traffic fintech and SaaS threads daily.</p></div>
+    <div class="finding-card blue"><h4>&#128202; Sheet1 is Your Primary Data Source</h4><p>All post-level activity (64 entries, May 26&ndash;June 12) is being logged directly in <strong>Sheet1 of the Adly X Twitter Project Google Sheet</strong>. The Weekly Analytics Log tab is secondary. This dashboard reads from Sheet1 and will be refreshed bi-weekly. To keep dashboards accurate, all team members must log their posts promptly &mdash; especially Leah, whose @lestrada_8_3 data is currently missing.</p></div>
+  </div>
+</div>
+<footer>Adly X/Twitter Team Dashboard &middot; Data from Sheet1 (Google Sheets) &middot; Built June 15, 2026</footer>
+<script>
+const C={o:'#7F77DD',j:'#1D9E75',n:'#BA7517',pk:'#378ADD',sd:'#D85A30'};
+new Chart(document.getElementById('impChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Impressions',data:[262,198,134],backgroundColor:[C.o,C.j,C.n],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+new Chart(document.getElementById('bubbleChart'),{type:'bubble',data:{datasets:[{label:'Olibher',data:[{x:28,y:15.4,r:12}],backgroundColor:C.o+'cc'},{label:'Jes',data:[{x:22,y:21.2,r:10}],backgroundColor:C.j+'cc'},{label:'Jen',data:[{x:14,y:18.7,r:8}],backgroundColor:C.n+'cc'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{title:{display:true,text:'Posts',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{title:{display:true,text:'Avg ER %',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+new Chart(document.getElementById('brandChart'),{type:'bar',data:{labels:['PaymentKit','SubDelete','SendScale'],datasets:[{label:'Impressions',data:[318,242,34],backgroundColor:[C.pk,C.sd,C.j],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+new Chart(document.getElementById('typeChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Original Posts',data:[12,8,6],backgroundColor:'#3a3f6e',borderRadius:4},{label:'Replies',data:[16,14,8],backgroundColor:C.o,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+</script>
+</body></html>
