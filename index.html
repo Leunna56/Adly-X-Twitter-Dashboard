@@ -161,9 +161,9 @@
     <div class="card"><h3>Team Productivity &amp; Performance</h3>
       <table><thead><tr><th>Member</th><th>Posts</th><th>Impressions</th><th>Avg ER</th><th>Status</th></tr></thead>
       <tbody>
-        <tr><td><span class="member-dot" style="background:#7F77DD"></span>Olibher</td><td>28</td><td>262</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:52px;background:#7F77DD"></div>15.4%</div></td><td><span class="badge active">Active</span></td></tr>
-        <tr><td><span class="member-dot" style="background:#1D9E75"></span>Jes</td><td>22</td><td>198</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:64px;background:#1D9E75"></div>21.2%</div></td><td><span class="badge active">Active</span></td></tr>
-        <tr><td><span class="member-dot" style="background:#BA7517"></span>Jen</td><td>14</td><td>134</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:56px;background:#BA7517"></div>18.7%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#7F77DD"></span>Olibher</td><td>18</td><td>262</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:52px;background:#7F77DD"></div>15.4%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#1D9E75"></span>Jes</td><td>23</td><td>198</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:64px;background:#1D9E75"></div>21.2%</div></td><td><span class="badge active">Active</span></td></tr>
+        <tr><td><span class="member-dot" style="background:#BA7517"></span>Jen</td><td>23</td><td>134</td><td><div class="er-bar-wrap"><div class="er-bar" style="width:56px;background:#BA7517"></div>18.7%</div></td><td><span class="badge active">Active</span></td></tr>
         <tr><td><span class="member-dot" style="background:#555"></span>Leah</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td><span class="badge missing">Missing</span></td></tr>
       </tbody></table>
     </div>
@@ -176,7 +176,7 @@
   <div class="two-col" style="margin-bottom:14px;">
     <div class="card"><h3>&#127919; Opportunities &mdash; From the Data</h3>
       <ul class="item-list">
-        <li data-icon="&#128200;"><strong>Replies outperform original posts</strong> &mdash; 38 replies vs 26 original posts logged, with replies driving higher ER. Shift more volume toward reply engagement next period.</li>
+        <li data-icon="&#128200;"><strong>Replies outperform original posts</strong> &mdash; 34 replies vs 30 original posts logged, with replies driving higher ER. Shift more volume toward reply engagement next period.</li>
         <li data-icon="&#11088;"><strong>Jes has the highest ER at 21.2%</strong> &mdash; with fewer posts than Olibher. If the rest of the team mirrors Jes&rsquo;s approach, team-wide ER could climb significantly.</li>
         <li data-icon="&#128202;"><strong>Jen posts the least (14) but holds 18.7% ER</strong> &mdash; increasing Jen&rsquo;s post volume is a low-risk way to add impressions without hurting quality.</li>
         <li data-icon="&#128683;"><strong>SendScale is a complete blind spot</strong> &mdash; zero data this period. No opportunities can be identified for that brand until Leah logs @lestrada_8_3 posts.</li>
@@ -204,7 +204,7 @@ const C={o:'#7F77DD',j:'#1D9E75',n:'#BA7517',pk:'#378ADD',sd:'#D85A30'};
 new Chart(document.getElementById('impChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Impressions',data:[262,198,134],backgroundColor:[C.o,C.j,C.n],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
 new Chart(document.getElementById('bubbleChart'),{type:'bubble',data:{datasets:[{label:'Olibher',data:[{x:28,y:15.4,r:12}],backgroundColor:C.o+'cc'},{label:'Jes',data:[{x:22,y:21.2,r:10}],backgroundColor:C.j+'cc'},{label:'Jen',data:[{x:14,y:18.7,r:8}],backgroundColor:C.n+'cc'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{title:{display:true,text:'Posts',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{title:{display:true,text:'Avg ER %',color:'#8b90b8'},grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
 new Chart(document.getElementById('brandChart'),{type:'bar',data:{labels:['PaymentKit','SubDelete','SendScale'],datasets:[{label:'Impressions',data:[318,242,34],backgroundColor:[C.pk,C.sd,C.j],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
-new Chart(document.getElementById('typeChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Original Posts',data:[12,8,6],backgroundColor:'#3a3f6e',borderRadius:4},{label:'Replies',data:[16,14,8],backgroundColor:C.o,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
+new Chart(document.getElementById('typeChart'),{type:'bar',data:{labels:['Olibher','Jes','Jen'],datasets:[{label:'Original Posts',data:[5,9,16],backgroundColor:'#3a3f6e',borderRadius:4},{label:'Replies',data:[13,14,7],backgroundColor:C.o,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b90b8',boxWidth:10}}},scales:{x:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}},y:{stacked:true,grid:{color:'#1e2235'},ticks:{color:'#8b90b8'}}}}});
 const periods=[{current:'May 4, 2026 – May 17, 2026',prev:'Apr 20, 2026 – May 3, 2026',hasData:false},{current:'May 18, 2026 – May 31, 2026',prev:'May 4, 2026 – May 17, 2026',hasData:false},{current:'Jun 1, 2026 – Jun 14, 2026',prev:'May 18, 2026 – May 31, 2026',hasData:true}];
 let periodIdx=2;
 
