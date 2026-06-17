@@ -276,68 +276,67 @@ function renderTypeChart(md){
 }
 </script><script>
 function renderERBars(md){
-  const members=MORDER.filter(m=>md[m]);
-  const maxP=Math.max(...members.map(m=>md[m].total),1);
-  const maxE=Math.max(...members.map(m=>md[m].er),1);
-  const best=members.reduce((b,m)=>!b||md[m].er>md[b].er?m:b,null);
-  document.getElementById('erBars').innerHTML=members.map((member,i)=>{
-    const d=md[member],pp=Math.round(d.total/maxP*100),ep=Math.round(d.er/maxE*100);
-    const sep=i>0?'border-top:1px solid #1e2235;padding-top:14px;':'';
-    const tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p &middot; '+d.replies+'r</span>';
+  var members=MORDER.filter(function(m){return md[m];});
+  var maxP=Math.max.apply(null,members.map(function(m){return md[m].total;}).concat([1]));
+  var maxE=Math.max.apply(null,members.map(function(m){return md[m].er;}).concat([1]));
+  var best=members.reduce(function(b,m){return !b||md[m].er>md[b].er?m:b;},null);
+  document.getElementById('erBars').innerHTML=members.map(function(member,i){
+    var d=md[member];
+    var pp=Math.round(d.total/maxP*100);
+    var ep=Math.round(d.er/maxE*100);
+    var sep=i>0?'border-top:1px solid #1e2235;padding-top:14px;':'';
+    var tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p &middot; '+d.replies+'r</span>';
     return '<div style="'+sep+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+MC[member]+';margin-right:7px;vertical-align:middle"></span>'+member+'</span>'+tag+'</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:11px;color:#8b90b8;width:42px">Posts</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+pp+'%;height:100%;background:'+MC[member]+';border-radius:4px"></div></div><span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.total+'</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#8b90b8;width:42px">ER</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+ep+'%;height:100%;background:'+MC[member]+';border-radius:4px;opacity:.85"></div></div><span style="font-size:12px;font-weight:700;width:40px;text-align:right">'+d.er.toFixed(1)+'%</span></div></div>';
   }).join('');
 }
-
 function renderTeamTable(md){
-  document.getElementById('teamTbody').innerHTML=MORDER.map(member=>{
-    const d=md[member],color=MC[member]||'#555';
-    if(!d)return '<tr><td><span class="dot" style="background:'+color+'"></span>'+member+'</td><td>—</td><td>—</td><td>—</td><td><span class="badge missing">Missing</span></td></tr>';
-    const bw=Math.max(Math.round(d.er/30*60),3);
+  document.getElementById('teamTbody').innerHTML=MORDER.map(function(member){
+    var d=md[member];var color=MC[member]||'#555';
+    if(!d) return '<tr><td><span class="dot" style="background:'+color+'"></span>'+member+'</td><td>-</td><td>-</td><td>-</td><td><span class="badge missing">Missing</span></td></tr>';
+    var bw=Math.max(Math.round(d.er/30*60),3);
     return '<tr><td><span class="dot" style="background:'+color+'"></span>'+member+'</td><td>'+d.total+'</td><td>'+d.imp.toLocaleString()+'</td><td style="white-space:nowrap"><div style="display:flex;align-items:center;gap:6px"><div style="width:'+bw+'px;height:6px;border-radius:3px;background:'+color+';flex-shrink:0"></div>'+d.er.toFixed(1)+'%</div></td><td><span class="badge active">Active</span></td></tr>';
   }).join('');
 }
-
 function renderTopPosts(top3){
-  document.getElementById('topPosts').innerHTML=top3.map((p,i)=>{
-    const txt=(p['Post text']||'').replace(/\\/g,'');
-    const preview=txt.length>65?txt.slice(0,62)+'…':txt;
-    const brand=normBrand(p['Brand'])||p['Brand'];
-    return '<div class="top-post"><div class="top-rank">#'+(i+1)+'</div><div><div class="top-handle">'+(p._handle||'?')+' &middot; '+brand+'</div><div class="top-preview">"'+preview+'"</div><div class="top-stat"><strong>'+p._imp+'</strong> impressions &middot; <strong>'+p._er.toFixed(1)+'%</strong> ER</div></div></div>';
+  document.getElementById('topPosts').innerHTML=top3.map(function(p,i){
+    var txt=(p['Post text']||'');
+    var preview=txt.length>65?txt.slice(0,62)+'...':txt;
+    var brand=normBrand(p['Brand'])||p['Brand'];
+    return '<div class="top-post"><div class="top-rank">#'+(i+1)+'</div><div><div class="top-handle">'+(p._handle||'?')+' - '+brand+'</div><div class="top-preview">'+preview+'</div><div class="top-stat"><strong>'+p._imp+'</strong> impressions &middot; <strong>'+p._er.toFixed(1)+'%</strong> ER</div></div></div>';
   }).join('');
 }
-
-function renderOpportunities(m){
-  const members=MORDER.filter(x=>mdG[x]&&x!=='Leah');
-  const best=members.reduce((b,x)=>!b||mdG[x].er>mdG[b].er?x:b,null);
-  const totP=members.reduce((s,x)=>s+mdG[x].posts,0);
-  const totR=members.reduce((s,x)=>s+mdG[x].replies,0);
-  const items=[
-    totR>totP?{icon:'&#128200;',html:'<strong>Replies outperform original posts</strong> — '+totR+' replies vs '+totP+' original posts. Replies are driving higher ER. Shift more volume toward reply engagement next period.'}:{icon:'&#128200;',html:'<strong>Original posts leading this period</strong> — '+totP+' posts vs '+totR+' replies. Consider balancing with more reply engagement.'},
-    best?{icon:'&#11088;',html:'<strong>'+best+' has the highest ER at '+mdG[best].er.toFixed(1)+'%</strong> — with '+mdG[best].total+' total actions. Mirroring this content style team-wide could significantly lift overall ER.'}:null,
-    {icon:'&#128202;',html:'<strong>Jen and Jes are logging strong volume</strong> — increasing Olibher's original post count is a low-risk way to add impressions without hurting quality.'},
-    !mdG['Leah']?{icon:'&#128683;',html:'<strong>SendScale is a complete blind spot</strong> — zero data logged this period. No opportunities can be identified until Leah logs @lestrada_8_3 posts.'}:null,
+function renderOpportunities(){
+  var members=MORDER.filter(function(x){return mdG[x]&&x!=='Leah';});
+  var best=members.reduce(function(b,x){return !b||mdG[x].er>mdG[b].er?x:b;},null);
+  var totP=members.reduce(function(s,x){return s+mdG[x].posts;},0);
+  var totR=members.reduce(function(s,x){return s+mdG[x].replies;},0);
+  var items=[
+    {icon:'&#128200;',html:'<strong>'+(totR>totP?'Replies outperform original posts':'Original posts leading this period')+'</strong> - '+totR+' replies vs '+totP+' posts.'},
+    best?{icon:'&#11088;',html:'<strong>'+best+' leads with '+mdG[best].er.toFixed(1)+'% ER</strong> - '+mdG[best].total+' total actions logged.'}:null,
+    {icon:'&#128202;',html:'<strong>Jen and Jes logging strong volume</strong> - increasing Olibher original posts is low-risk.'},
+    !mdG['Leah']?{icon:'&#128683;',html:'<strong>SendScale has zero data</strong> - no insights until Leah logs @lestrada_8_3 posts.'}:null
   ].filter(Boolean);
-  document.getElementById('opportunities').innerHTML=items.map(x=>'<li data-icon="'+x.icon+'">'+x.html+'</li>').join('');
+  document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
-
 async function loadData(){
-  const btn=document.getElementById('refreshBtn');
-  const icon=document.getElementById('spinIcon');
+  var btn=document.getElementById('refreshBtn');
+  var icon=document.getElementById('spinIcon');
   btn.disabled=true;icon.classList.add('spinning');
   try{
-    const res=await fetch(CSV_URL);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const text=await res.text();
-    const {posts,accounts}=parseSheet(text);
-    if(!posts.length)throw new Error('No data found. Make sure the Google Sheet is set to "Anyone with the link can view".');
-    const m=compute(posts);
+    var res=await fetch(CSV_URL);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    var text=await res.text();
+    var parsed=parseSheet(text);
+    var posts=parsed.posts;var accounts=parsed.accounts;
+    if(!posts.length) throw new Error('No data. Ensure Google Sheet is shared publicly.');
+    var m=compute(posts);
     document.getElementById('stateBox').style.display='none';
     document.getElementById('dashboard').style.display='block';
     render(posts,accounts,m);
   }catch(err){
-    const box=document.getElementById('stateBox');
+    var box=document.getElementById('stateBox');
     box.className='state-box err';box.style.display='block';
-    box.innerHTML='&#9888; '+err.message+'<br><br><small>Make sure the Google Sheet is shared as <strong>"Anyone with the link can view"</strong>, then click Refresh Data.</small>';
+    box.innerHTML='&#9888; '+err.message+'<br><br><small>Ensure the Google Sheet is <strong>Anyone with the link can view</strong>, then click Refresh Data.</small>';
   }finally{btn.disabled=false;icon.classList.remove('spinning');}
 }
 loadData();
