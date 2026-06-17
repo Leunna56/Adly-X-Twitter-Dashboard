@@ -222,15 +222,15 @@ function render(posts,accounts,m){
   document.getElementById('kpiER').textContent=m.avgER.toFixed(1)+'%';
   const active=m.activeMembers.filter(x=>x!=='Leah');
   document.getElementById('kpiMembers').textContent=active.length+' / 4';
-  document.getElementById('kpiMemberSub').textContent=active.join(' · ')+' logging';
+  document.getElementById('kpiMemberSub').textContent=active.join(' \u00B7 ')+' logging';
   const dates=posts.map(p=>new Date(p['Date'])).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
   if(dates.length){
     const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    document.getElementById('periodMeta').textContent='Data: '+f(dates[0])+' – '+f(dates[dates.length-1])+' · '+posts.length+' entries';
+    document.getElementById('periodMeta').textContent='Data: '+f(dates[0])+' \u2013 '+f(dates[dates.length-1])+' \u00B7 '+posts.length+' entries';
   }
   const now=new Date();
   document.getElementById('lastUpdated').textContent='Updated '+now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  document.getElementById('liveDate').textContent='Live · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('liveDate').textContent='Live \u00B7 '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('footerDate').textContent=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   if(!m.md['Leah']){document.getElementById('alertBanner').style.display='flex';document.getElementById('alertText').textContent="Leah's @lestrada_8_3 posts are not yet logged.";}
   else document.getElementById('alertBanner').style.display='none';
@@ -389,7 +389,7 @@ function getPeriods(posts,mode,shift){
   prevTo.setHours(23,59,59,999);
   return {curFrom:curFrom,curTo:curTo,prevFrom:prevFrom,prevTo:prevTo};
 }
-function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('summaryBar');if(!sb)return;if(mode==='all'||mode==='custom'){sb.style.display='none';return;}sb.style.display='block';var label=mode==='bw'?'Bi-Weekly Summary':'Monthly Summary';sb.querySelector('span').textContent=label;var cur=computeBasic(curP);var prev=computeBasic(prevP);if(periods){document.getElementById('sumCurPeriod').textContent=fmtD(periods.curFrom)+' – '+fmtD(periods.curTo);document.getElementById('sumPrevPeriod').textContent=periods.prevFrom?(fmtD(periods.prevFrom)+' – '+fmtD(periods.prevTo)):'';}var cards=[{lbl:'TOTAL ACTIONS',val:cur.total,delta:dHtml(cur.total,prev.total,false)},{lbl:'IMPRESSIONS',val:cur.imp.toLocaleString(),delta:dHtml(cur.imp,prev.imp,false)},{lbl:'AVG ER',val:cur.er.toFixed(1)+'%',delta:dHtml(cur.er,prev.er,true)},{lbl:'TOP MEMBER',val:cur.topMem||'—',delta:cur.topER>0?'<span style="color:#8b90b8">'+cur.topER.toFixed(1)+'% ER</span>':''},{lbl:'TOP BRAND',val:cur.topB||'—',delta:'<span style="color:#8b90b8">'+((cur.bM&&cur.topB)?cur.bM[cur.topB]:0)+' posts</span>'}];document.getElementById('summaryCards').innerHTML=cards.map(function(c){return'<div class="sum-card"><div style="font-size:10px;color:#8b90b8;letter-spacing:.05em;font-weight:600">'+c.lbl+'</div><div style="font-size:22px;font-weight:800;color:#e2e8f0;margin:4px 0">'+c.val+'</div><div style="font-size:12px">'+c.delta+'</div></div>';}).join('');}
+function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('summaryBar');if(!sb)return;if(mode==='all'||mode==='custom'){sb.style.display='none';return;}sb.style.display='block';var label=mode==='bw'?'Bi-Weekly Summary':'Monthly Summary';sb.querySelector('span').textContent=label;var cur=computeBasic(curP);var prev=computeBasic(prevP);if(periods){document.getElementById('sumCurPeriod').textContent=fmtD(periods.curFrom)+' \u2013 '+fmtD(periods.curTo);document.getElementById('sumPrevPeriod').textContent=periods.prevFrom?(fmtD(periods.prevFrom)+' \u2013 '+fmtD(periods.prevTo)):'';}var cards=[{lbl:'TOTAL ACTIONS',val:cur.total,delta:dHtml(cur.total,prev.total,false)},{lbl:'IMPRESSIONS',val:cur.imp.toLocaleString(),delta:dHtml(cur.imp,prev.imp,false)},{lbl:'AVG ER',val:cur.er.toFixed(1)+'%',delta:dHtml(cur.er,prev.er,true)},{lbl:'TOP MEMBER',val:cur.topMem||'—',delta:cur.topER>0?'<span style="color:#8b90b8">'+cur.topER.toFixed(1)+'% ER</span>':''},{lbl:'TOP BRAND',val:cur.topB||'—',delta:'<span style="color:#8b90b8">'+((cur.bM&&cur.topB)?cur.bM[cur.topB]:0)+' posts</span>'}];document.getElementById('summaryCards').innerHTML=cards.map(function(c){return'<div class="sum-card"><div style="font-size:10px;color:#8b90b8;letter-spacing:.05em;font-weight:600">'+c.lbl+'</div><div style="font-size:22px;font-weight:800;color:#e2e8f0;margin:4px 0">'+c.val+'</div><div style="font-size:12px">'+c.delta+'</div></div>';}).join('');}
 function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});applyFilter();}
 function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);applyFilter();}
 function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
