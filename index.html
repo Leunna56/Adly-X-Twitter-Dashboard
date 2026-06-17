@@ -64,7 +64,7 @@ tr:last-child td{border-bottom:none}
 .finding-card p{font-size:13px;color:#c8cfe8;line-height:1.5}
 footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:8px}
 @media(max-width:900px){.kpi-grid,.acct-grid{grid-template-columns:1fr 1fr}.grid-2,.findings-grid{grid-template-columns:1fr}}
-</style>
+.pb{background:#1e2235;border:none;color:#8b90b8;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .2s}.pb.active{background:#e85e0d;color:#fff}.sum-card{background:#1e2235;border-radius:8px;padding:14px 16px;min-width:130px;flex:1}</style>
 </head>
 <body>
 <div class="topbar">
@@ -339,12 +339,10 @@ async function loadData(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     var text=await res.text();
     var parsed=parseSheet(text);
-    var posts=parsed.posts;var accounts=parsed.accounts;
+    var posts=parsed.posts;
     if(!posts.length) throw new Error('No data. Ensure Google Sheet is shared publicly.');
-    var m=compute(posts);
-    document.getElementById('stateBox').style.display='none';
-    document.getElementById('dashboard').style.display='block';
-    render(posts,accounts,m);
+    _allPosts=posts;
+    applyFilter();
   }catch(err){
     var box=document.getElementById('stateBox');
     box.className='state-box err';box.style.display='block';
@@ -353,5 +351,28 @@ async function loadData(){
 }
 loadData();
 </script>
-</body>
-</html>
+<script>
+var _allPosts=[];var _curMode='bw';var _curShift=0;
+function parsePostDate(s){if(!s)return null;var d=new Date(s);return isNaN(d.getTime())?null:d;}
+function fmtD(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function toYMD(d){var m=String(d.getMonth()+1).padStart(2,'0');var dd=String(d.getDate()).padStart(2,'0');return d.getFullYear()+'-'+m+'-'+dd;}
+function filterByDate(posts,from,to){return posts.filter(function(p){var d=parsePostDate(p['Date']);if(!d)return false;return(!from||d>=from)&&(!to||d<=to);});}
+function computeBasic(posts){
+  var imp=posts.reduce(function(s,p){return s+(parseInt(p['Impressions'])||0);},0);
+  var eng=posts.reduce(function(s,p){return s+(parseInt(p['Engagements'])||0);},0);
+  var er=imp>0?(eng/imp*100):0;
+  var agM={};posts.forEach(function(p){var ag=normAgent(p['Agent']||'');if(!ag)return;if(!agM[ag])agM[ag]={imp:0,eng:0};agM[ag].imp+=parseInt(p['Impressions'])||0;agM[ag].eng+=parseInt(p['Engagements'])||0;});
+  var topMem=null,topER=0;Object.keys(agM).forEach(function(ag){var re=agM[ag].imp>0?agM[ag].eng/agM[ag].imp*100:0;if(re>topER){topER=re;topMem=ag;}});
+  var bM={};posts.forEach(function(p){var b=normBrand(p['Brand']||'')||p['Brand']||'';if(b)bM[b]=(bM[b]||0)+1;});
+  var topB=Object.keys(bM).length?Object.keys(bM).reduce(function(a,b){return bM[b]>bM[a]?b:a;},''):'';
+  return{total:posts.length,imp:imp,er:er,topMem:topMem,topER:topER,topB:topB,bM:bM};
+}
+function dHtml(cur,prev,isPct){if(prev===null||prev===undefined||isNaN(prev))return'';var d=cur-prev;if(d===0)return'<span style="color:#8b90b8">no change</span>';var clr=d>0?'#1D9E75':'#e53e3e';var arr=d>0?'&#9650;':'&#9660;';var v=isPct?((d>0?'+':'')+d.toFixed(1)+'%'):((d>0?'+':'')+Math.round(d));return'<span style="color:'+clr+'">'+arr+' '+v+' vs prev</span>';}
+function getPeriods(posts,mode,shift){var dates=posts.map(function(p){return parsePostDate(p['Date']);}).filter(Boolean);if(!dates.length)return null;var maxD=new Date(Math.max.apply(null,dates));var minD=new Date(Math.min.apply(null,dates));if(mode==='all')return{curFrom:minD,curTo:maxD,prevFrom:null,prevTo:null};var span=mode==='bw'?14:30;var off=shift*span*86400000;var curTo=new Date(maxD.getTime()-off);curTo.setHours(23,59,59,999);var curFrom=new Date(curTo.getTime()-(span-1)*86400000);curFrom.setHours(0,0,0,0);var prevTo=new Date(curFrom.getTime()-86400000);prevTo.setHours(23,59,59,999);var prevFrom=new Date(prevTo.getTime()-(span-1)*86400000);prevFrom.setHours(0,0,0,0);return{curFrom:curFrom,curTo:curTo,prevFrom:prevFrom,prevTo:prevTo};}
+function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('summaryBar');if(!sb)return;if(mode==='all'||mode==='custom'){sb.style.display='none';return;}sb.style.display='block';var label=mode==='bw'?'Bi-Weekly Summary':'Monthly Summary';sb.querySelector('span').textContent=label;var cur=computeBasic(curP);var prev=computeBasic(prevP);if(periods){document.getElementById('sumCurPeriod').textContent=fmtD(periods.curFrom)+' – '+fmtD(periods.curTo);document.getElementById('sumPrevPeriod').textContent=periods.prevFrom?(fmtD(periods.prevFrom)+' – '+fmtD(periods.prevTo)):'';}var cards=[{lbl:'TOTAL ACTIONS',val:cur.total,delta:dHtml(cur.total,prev.total,false)},{lbl:'IMPRESSIONS',val:cur.imp.toLocaleString(),delta:dHtml(cur.imp,prev.imp,false)},{lbl:'AVG ER',val:cur.er.toFixed(1)+'%',delta:dHtml(cur.er,prev.er,true)},{lbl:'TOP MEMBER',val:cur.topMem||'—',delta:cur.topER>0?'<span style="color:#8b90b8">'+cur.topER.toFixed(1)+'% ER</span>':''},{lbl:'TOP BRAND',val:cur.topB||'—',delta:'<span style="color:#8b90b8">'+((cur.bM&&cur.topB)?cur.bM[cur.topB]:0)+' posts</span>'}];document.getElementById('summaryCards').innerHTML=cards.map(function(c){return'<div class="sum-card"><div style="font-size:10px;color:#8b90b8;letter-spacing:.05em;font-weight:600">'+c.lbl+'</div><div style="font-size:22px;font-weight:800;color:#e2e8f0;margin:4px 0">'+c.val+'</div><div style="font-size:12px">'+c.delta+'</div></div>';}).join('');}
+function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});applyFilter();}
+function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);applyFilter();}
+function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
+function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m);}
+</script></body>
+</html<div id="filterBar" style="background:#0d1117;padding:10px 24px;border-bottom:1px solid #1e2235;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:12px;color:#8b90b8">Period</span><button class="pb active" data-p="bw" onclick="setPeriod('bw')">Bi-Weekly</button><button class="pb" data-p="mo" onclick="setPeriod('mo')">Monthly</button><button class="pb" data-p="all" onclick="setPeriod('all')">All Time</button><span style="font-size:12px;color:#8b90b8;margin-left:8px">From</span><input type="date" id="fromDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><span style="color:#8b90b8">to</span><input type="date" id="toDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><button onclick="resetPeriod()" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px">Reset</button></div><div id="summaryBar" style="display:none;background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div>>
