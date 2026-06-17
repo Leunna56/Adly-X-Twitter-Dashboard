@@ -234,28 +234,31 @@ function render(posts,accounts,m){
   document.getElementById('footerDate').textContent=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   if(!m.md['Leah']){document.getElementById('alertBanner').style.display='flex';document.getElementById('alertText').textContent="Leah's @lestrada_8_3 posts are not yet logged.";}
   else document.getElementById('alertBanner').style.display='none';
-  renderAccounts(accounts,m.activePremium);
+  renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3);renderOpportunities(m);
 }
 
-function renderAccounts(accounts,activePremium){
-  const byBrand={};
-  for(const a of accounts){const b=normBrand(a['Brand'])||a['Brand'];if(!byBrand[b])byBrand[b]=[];byBrand[b].push(a);}
-  const grid=document.getElementById('acctGrid');grid.innerHTML='';
-  const total=accounts.length,prem=accounts.filter(a=>activePremium.has(a['Account Handle'])).length;
-  const sum=document.createElement('div');sum.style.textAlign='center';
-  sum.innerHTML='<div style="font-size:28px;font-weight:700;color:var(--purple)">'+total+'</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Active Accounts</div><div style="font-size:12px;color:var(--green);font-weight:600;margin-top:6px">'+prem+' on X Premium</div>';
-  grid.appendChild(sum);
-  for(const brand of['PaymentKit','SubDelete','SendScale']){
-    const list=byBrand[brand]||[],color=BC[brand]||'#888';
-    const div=document.createElement('div');div.className='brand-box';
-    const accts=list.map(a=>{const p=activePremium.has(a['Account Handle']);return'<span style="color:'+(p?'#1D9E75':'#2e3250')+'">&#9679;</span> <span style="color:'+(p?'var(--text)':'var(--muted)')+'">'+a['Account Handle']+'</span>';}).join('<br>')||'<span style="color:var(--muted)">No accounts</span>';
-    div.innerHTML='<div class="brand-hdr"><span class="brand-name" style="color:'+color+'">'+brand+'</span><span class="brand-count" style="color:'+color+'">'+list.length+'</span></div><div class="acct-list">'+accts+'</div>';
-    grid.appendChild(div);
-  }
+function renderAccounts(posts){
+  var accts={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
+  var activeHandles=new Set(posts.map(function(p){return (p._handle||'').replace('@','').toLowerCase();}));
+  var totalAccts=0,premAccts=0;
+  var brands=Object.keys(accts);
+  brands.forEach(function(b){totalAccts+=accts[b].length;accts[b].forEach(function(a){if(activeHandles.has(a.h.toLowerCase()))premAccts++;});});
+  document.getElementById('acctTotal').textContent=totalAccts;
+  document.getElementById('acctPremium').textContent=premAccts+' on X Premium';
+  brands.forEach(function(b){
+    var el=document.getElementById('acct'+b.replace(/[^a-zA-Z]/g,''));
+    if(!el)return;
+    var count=accts[b].filter(function(a){return activeHandles.has(a.h.toLowerCase());}).length;
+    var cntEl=el.querySelector('.brand-count');if(cntEl)cntEl.textContent=count;
+    var listEl=el.querySelector('.acct-list');
+    if(listEl)listEl.innerHTML=accts[b].map(function(a){
+      var prem=activeHandles.has(a.h.toLowerCase());
+      return '<span class="acct-handle'+(prem?'':' dim')+'"><span class="acct-dot" style="color:'+(prem?'#1D9E75':'#444')+'">●</span>@'+a.h+'</span>';
+    }).join('');
+  });
 }
-
 function mkChart(id,type,labels,datasets,extra){
   extra=extra||{};if(charts[id])charts[id].destroy();
   charts[id]=new Chart(document.getElementById(id).getContext('2d'),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false,...(extra.legend||{})}},scales:{x:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'},...(extra.xs||{})},y:{grid:{color:'#1e2235'},ticks:{color:'#8b90b8'},...(extra.ys||{})}}}});
