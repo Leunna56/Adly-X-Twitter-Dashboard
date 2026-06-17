@@ -240,24 +240,33 @@ function render(posts,accounts,m){
 }
 
 function renderAccounts(posts){
-  var accts={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
-  var activeHandles=new Set(posts.map(function(p){return (p._handle||'').replace('@','').toLowerCase();}));
-  var totalAccts=0,premAccts=0;
-  var brands=Object.keys(accts);
-  brands.forEach(function(b){totalAccts+=accts[b].length;accts[b].forEach(function(a){if(activeHandles.has(a.h.toLowerCase()))premAccts++;});});
-  document.getElementById('acctTotal').textContent=totalAccts;
-  document.getElementById('acctPremium').textContent=premAccts+' on X Premium';
-  brands.forEach(function(b){
-    var el=document.getElementById('acct'+b.replace(/[^a-zA-Z]/g,''));
-    if(!el)return;
-    var count=accts[b].filter(function(a){return activeHandles.has(a.h.toLowerCase());}).length;
-    var cntEl=el.querySelector('.brand-count');if(cntEl)cntEl.textContent=count;
-    var listEl=el.querySelector('.acct-list');
-    if(listEl)listEl.innerHTML=accts[b].map(function(a){
-      var prem=activeHandles.has(a.h.toLowerCase());
-      return '<span class="acct-handle'+(prem?'':' dim')+'"><span class="acct-dot" style="color:'+(prem?'#1D9E75':'#444')+'">●</span>@'+a.h+'</span>';
-    }).join('');
+  var ACCTS={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
+  var activeH=new Set(posts.map(function(p){return (p._handle||'').replace('@','').toLowerCase();}));
+  var totalA=0,premA=0;
+  Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(activeH.has(a.h.toLowerCase()))premA++;});});
+  var grid=document.getElementById('acctGrid');
+  if(!grid)return;
+  var BC2={'PaymentKit':'#378ADD','SubDelete':'#D85A30','SendScale':'#1D9E75'};
+  var html='<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap">';
+  html+='<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#a78bfa">'+totalA+'</div><div style="font-size:12px;color:#8b90b8">Active Accounts</div></div>';
+  html+='<div style="font-size:13px;color:#1D9E75;font-weight:600">'+premA+' on X Premium</div>';
+  html+='<div style="margin-left:auto;font-size:12px;color:#8b90b8"><span style="color:#1D9E75">●</span> X Premium &nbsp; <span style="color:#444">●</span> Not yet upgraded</div>';
+  html+='</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">';
+  Object.keys(ACCTS).forEach(function(brand){
+    var count=ACCTS[brand].filter(function(a){return activeH.has(a.h.toLowerCase());}).length;
+    var color=BC2[brand]||'#555';
+    html+='<div style="background:#111827;border-radius:10px;padding:14px">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+    html+='<span style="font-size:14px;font-weight:700;color:'+color+'">'+brand+'</span>';
+    html+='<span style="font-size:20px;font-weight:800;color:'+color+'">'+count+'</span></div>';
+    ACCTS[brand].forEach(function(a){
+      var prem=activeH.has(a.h.toLowerCase());
+      html+='<div style="font-size:12px;margin-bottom:4px"><span style="color:'+(prem?'#1D9E75':'#444')+'">●</span> <span style="color:'+(prem?'#e2e8f0':'#666')+'">@'+a.h+'</span></div>';
+    });
+    html+='</div>';
   });
+  html+='</div>';
+  grid.innerHTML=html;
 }
 function mkChart(id,type,labels,datasets,extra){
   extra=extra||{};if(charts[id])charts[id].destroy();
