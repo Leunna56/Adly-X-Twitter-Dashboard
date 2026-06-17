@@ -241,16 +241,16 @@ function render(posts,accounts,m){
 
 function renderAccounts(posts){
   var ACCTS={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
-  var activeH=new Set(posts.map(function(p){return (p._handle||'').replace('@','').toLowerCase();}));
+  var activeH=new Set(posts.map(function(p){var lnk=p['Post Link']||'';var m=lnk.match(/x\.com\/([^\/]+)\//);return m?m[1].toLowerCase():'';}).filter(Boolean));
   var totalA=0,premA=0;
   Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(activeH.has(a.h.toLowerCase()))premA++;});});
   var grid=document.getElementById('acctGrid');
   if(!grid)return;
-  var BC2={'PaymentKit':'#378ADD','SubDelete':'#D85A30','SendScale':'#1D9E75'};
+  var BC2={PaymentKit:'#378ADD',SubDelete:'#D85A30',SendScale:'#1D9E75'};
   var html='<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap">';
   html+='<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#a78bfa">'+totalA+'</div><div style="font-size:12px;color:#8b90b8">Active Accounts</div></div>';
   html+='<div style="font-size:13px;color:#1D9E75;font-weight:600">'+premA+' on X Premium</div>';
-  html+='<div style="margin-left:auto;font-size:12px;color:#8b90b8"><span style="color:#1D9E75">●</span> X Premium &nbsp; <span style="color:#444">●</span> Not yet upgraded</div>';
+  html+='<div style="margin-left:auto;font-size:12px;color:#8b90b8"><span style="color:#1D9E75">&#9679;</span> X Premium &nbsp; <span style="color:#555">&#9679;</span> Not yet upgraded</div>';
   html+='</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">';
   Object.keys(ACCTS).forEach(function(brand){
     var count=ACCTS[brand].filter(function(a){return activeH.has(a.h.toLowerCase());}).length;
@@ -261,7 +261,7 @@ function renderAccounts(posts){
     html+='<span style="font-size:20px;font-weight:800;color:'+color+'">'+count+'</span></div>';
     ACCTS[brand].forEach(function(a){
       var prem=activeH.has(a.h.toLowerCase());
-      html+='<div style="font-size:12px;margin-bottom:4px"><span style="color:'+(prem?'#1D9E75':'#444')+'">●</span> <span style="color:'+(prem?'#e2e8f0':'#666')+'">@'+a.h+'</span></div>';
+      html+='<div style="font-size:12px;margin-bottom:4px"><span style="color:'+(prem?'#1D9E75':'#555')+'">&#9679;</span> <span style="color:'+(prem?'#e2e8f0':'#666')+'">@'+a.h+'</span></div>';
     });
     html+='</div>';
   });
