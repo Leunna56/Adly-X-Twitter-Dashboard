@@ -118,16 +118,16 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
       <div class="card"><h3>&#127919; Opportunities — From the Data</h3><ul class="item-list" id="opportunities"></ul></div>
       <div class="card"><h3>&#9989; Action Items — This Period</h3>
         <ul class="item-list">
-          <li data-icon="&#128308;">Leah: log @lestrada_8_3 posts immediately — SendScale has zero data this period</li>
-          <li data-icon="&#128993;">Team: fill in missing SendScale account handles in the Account Directory</li>
-          <li data-icon="&#128994;">All: follow daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep</li>
+          <li data-icon="&#128994;">Leah: keep the momentum — 46 actions, 18.2% ER leading the team this period</li>
+          <li data-icon="&#128993;">Olibher: increase original posts — 3 posts vs 11 replies; aim for 1 original post per day</li>
+          <li data-icon="&#128994;">All: follow daily cadenceAll: follow daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep</li>
           <li data-icon="&#128994;">Olibher/Jen: prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X</li>
         </ul>
       </div>
     </div>
     <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#128161; Key Findings</div>
     <div class="findings-grid">
-      <div class="finding-card green-f"><h4>&#128257; Reply Strategy is Winning</h4><p id="findingReply">Across all logged actions, replies to existing threads are generating disproportionately high engagement compared to original posts. This aligns with best practices for new X accounts in the warm-up phase.</p></div>
+      <div class="finding-card green-f"><h4>&#128257; Reply Strategy is Winning</h4><p id="findingReply">63 replies vs 44 original posts logged Jun 1–14. Leah’s 30-reply, 16-post mix is driving an 18.2% ER — the highest on the team. Reply-forward strategy continues to outperform across all members.</p></div>
       <div class="finding-card blue-f"><h4>&#128202; How This Dashboard Gets Its Data</h4><p>All post-level activity is logged manually by the team in the <strong>Adly X Twitter Project Google Sheet</strong>. This dashboard fetches live data directly from that sheet — hit <strong>Refresh Data</strong> anytime new posts have been logged.</p></div>
     </div>
   </div>
@@ -220,7 +220,7 @@ function render(posts,accounts,m){
   document.getElementById('kpiActions').textContent=m.total;
   document.getElementById('kpiImpressions').textContent=m.totImp.toLocaleString();
   document.getElementById('kpiER').textContent=m.avgER.toFixed(1)+'%';
-  const active=m.activeMembers.filter(x=>x!=='Leah');
+  const active=m.activeMembers;
   document.getElementById('kpiMembers').textContent=active.length+' / 4';
   document.getElementById('kpiMemberSub').textContent=active.join(' \u00B7 ')+' logging';
   const dates=posts.map(p=>new Date(p['Date'])).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
@@ -318,7 +318,7 @@ function renderTopPosts(top3){
   }).join('');
 }
 function renderOpportunities(){
-  var members=MORDER.filter(function(x){return mdG[x]&&x!=='Leah';});
+  var members=MORDER.filter(function(x){return mdG[x];});
   var best=members.reduce(function(b,x){return !b||mdG[x].er>mdG[b].er?x:b;},null);
   var totP=members.reduce(function(s,x){return s+mdG[x].posts;},0);
   var totR=members.reduce(function(s,x){return s+mdG[x].replies;},0);
@@ -364,7 +364,7 @@ function computeBasic(posts){
   var agM={};posts.forEach(function(p){var ag=normAgent(p['Agent']||'');if(!ag)return;if(!agM[ag])agM[ag]={imp:0,eng:0};agM[ag].imp+=parseInt(p['Impressions'])||0;agM[ag].eng+=parseInt(p['Engagements'])||0;});
   var topMem=null,topER=0;Object.keys(agM).forEach(function(ag){var re=agM[ag].imp>0?agM[ag].eng/agM[ag].imp*100:0;if(re>topER){topER=re;topMem=ag;}});
   var bM={};posts.forEach(function(p){var b=normBrand(p['Brand']||'')||p['Brand']||'';if(b)bM[b]=(bM[b]||0)+1;});
-  var topB=Object.keys(bM).length?Object.keys(bM).reduce(function(a,b){return bM[b]>bM[a]?b:a;},''):'';
+  var topB=Object.keys(bM).length?Object.keys(bM).reduce(function(a,b){return bM[b]>bM[a]?b:a;}):'';
   return{total:posts.length,imp:imp,er:er,topMem:topMem,topER:topER,topB:topB,bM:bM};
 }
 function dHtml(cur,prev,isPct){if(prev===null||prev===undefined||isNaN(prev))return'';var d=cur-prev;if(d===0)return'<span style="color:#8b90b8">no change</span>';var clr=d>0?'#1D9E75':'#e53e3e';var arr=d>0?'&#9650;':'&#9660;';var v=isPct?((d>0?'+':'')+d.toFixed(1)+'%'):((d>0?'+':'')+Math.round(d));return'<span style="color:'+clr+'">'+arr+' '+v+' vs prev</span>';}
