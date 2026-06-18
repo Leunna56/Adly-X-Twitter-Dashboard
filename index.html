@@ -222,7 +222,7 @@ function render(posts,accounts,m,periods){
   document.getElementById('kpiER').textContent=m.avgER.toFixed(1)+'%';
   const active=m.activeMembers;
   document.getElementById('kpiMembers').textContent=active.length+' / 4';
-  document.getElementById('kpiMemberSub').textContent=active.join(' \u00B7 ')+' logging';
+  document.getElementById('kpiMemberSub').textContent=active.join(' \u00B7 ');
   const dates=posts.map(p=>new Date(p['Date'])).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
   if(dates.length){
     const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
