@@ -215,7 +215,7 @@ function compute(posts){
 }
 </script><script>
 let mdG={};
-function render(posts,accounts,m){
+function render(posts,accounts,m,periods){
   mdG=m.md;
   document.getElementById('kpiActions').textContent=m.total;
   document.getElementById('kpiImpressions').textContent=m.totImp.toLocaleString();
@@ -226,7 +226,7 @@ function render(posts,accounts,m){
   const dates=posts.map(p=>new Date(p['Date'])).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
   if(dates.length){
     const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    document.getElementById('periodMeta').textContent='Data: '+f(dates[0])+' \u2013 '+f(dates[dates.length-1])+' \u00B7 '+posts.length+' entries';
+    document.getElementById('periodMeta').textContent='Data: '+f(dates[0])+' \u2013 '+(periods&&periods.curTo?f(periods.curTo):f(dates[dates.length-1]))+' \u00B7 '+posts.length+' entries';
   }
   const now=new Date();
   document.getElementById('lastUpdated').textContent='Updated '+now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
@@ -393,6 +393,6 @@ function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('
 function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});applyFilter();}
 function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);applyFilter();}
 function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
-function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m);}
+function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m,periods);}
 </script></body>
 </html>
