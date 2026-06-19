@@ -120,7 +120,7 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
       <div class="card"><h3>Team Productivity &amp; Performance</h3>
         <table><thead><tr><th>Member</th><th>Actions</th><th>Impressions</th><th>Avg ER</th><th>Status</th></tr></thead>
         <tbody id="teamTbody"></tbody></table></div>
-      <div class="card"><h3>Top 3 Performing Posts</h3><div id="topPosts"></div></div>
+      <div class="card"><h3>Top 3 Performing Posts</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;">Most Engagements</div><div id="topPostsByEng"></div></div><div><div style="font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;">Highest ER (10+ impressions)</div><div id="topPostsByER"></div></div></div></div>
     </div>
     <div class="grid-2" style="margin-bottom:13px">
       <div class="card"><h3>&#127919; Opportunities — From the Data</h3><ul class="item-list" id="opportunities"></ul></div>
@@ -215,11 +215,10 @@ function compute(posts){
   const totImp=posts.reduce((s,p)=>s+n(p['Impressions']),0);
   const totEng=posts.reduce((s,p)=>s+n(p['Engagements']),0);
   const avgER=totImp>0?totEng/totImp*100:0;
-  const top3=[...posts].filter(p=>n(p['Impressions'])>0).map(p=>{
-    const i=n(p['Impressions']),e=n(p['Engagements']);
-    return{...p,_imp:i,_er:i>0?e/i*100:0,_handle:extractHandle(p['Post Link'])};
-  }).sort((a,b)=>b._er-a._er).slice(0,3);
-  return{md,bd,totImp,totEng,avgER,activePremium,top3,total:posts.length,activeMembers:MORDER.filter(m=>md[m])};
+  const _mp=[...posts].map(p=>{const i=n(p['Impressions']),e=n(p['Engagements']);return{...p,_imp:i,_eng:e,_er:i>0?e/i*100:0,_handle:extractHandle(p['Post Link'])};});
+  const top3=[..._mp].filter(p=>p._eng>0).sort((a,b)=>b._eng-a._eng).slice(0,3);
+  const top3ByER=[..._mp].filter(p=>p._imp>=10).sort((a,b)=>b._er-a._er).slice(0,3);
+  return{md,bd,totImp,totEng,avgER,activePremium,top3,top3ByER,total:posts.length,activeMembers:MORDER.filter(m=>md[m])};
 }
 </script><script>
 let mdG={};
@@ -244,7 +243,7 @@ function render(posts,accounts,m,periods){
   else document.getElementById('alertBanner').style.display='none';
   renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
-  renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3);renderOpportunities(m);
+  renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
 }
 
 function renderAccounts(posts){
