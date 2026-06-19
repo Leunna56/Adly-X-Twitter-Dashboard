@@ -317,13 +317,16 @@ function renderTeamTable(md){
     return '<tr><td><span class="dot" style="background:'+color+'"></span>'+member+'</td><td>'+d.total+'</td><td>'+d.imp.toLocaleString()+'</td><td style="white-space:nowrap"><div style="display:flex;align-items:center;gap:6px"><div style="width:'+bw+'px;height:6px;border-radius:3px;background:'+color+';flex-shrink:0"></div>'+d.er.toFixed(1)+'%</div></td><td><span class="badge active">Active</span></td></tr>';
   }).join('');
 }
-function renderTopPosts(top3){
-  document.getElementById('topPosts').innerHTML=top3.map(function(p,i){
+function renderTopPosts(byEng,byER){
+  function mkItem(p,i,mode){
     var txt=(p['Post text']||'');
     var preview=txt.length>65?txt.slice(0,62)+'...':txt;
     var brand=normBrand(p['Brand'])||p['Brand'];
-    return '<div class="top-post"><div class="top-rank">#'+(i+1)+'</div><div><div class="top-handle">'+(p._handle||'?')+' - '+brand+'</div><div class="top-preview">'+preview+'</div><div class="top-stat"><strong>'+p._imp+'</strong> impressions &middot; <strong>'+p._er.toFixed(1)+'%</strong> ER</div></div></div>';
-  }).join('');
+    var sub=mode==='eng'?(p._eng+' engagements'):(p._imp+' impressions · '+p._er.toFixed(1)+'% ER');
+    return '<div class="top-post"><div style="font-size:11px;color:#8b90b8">'+(i+1)+'. '+p._handle+' - '+brand+'</div><div style="font-weight:500;margin:2px 0;">'+preview+'</div><div style="font-size:10px;color:#8b90b8;margin-top:4px">'+sub+'</div></div>';
+  }
+  document.getElementById('topPostsByEng').innerHTML=byEng.length?byEng.map(function(p,i){return mkItem(p,i,'eng');}).join(''):'<p style="color:#8b90b8;font-size:12px;">No data</p>';
+  document.getElementById('topPostsByER').innerHTML=byER.length?byER.map(function(p,i){return mkItem(p,i,'er');}).join(''):'<p style="color:#8b90b8;font-size:12px;">No posts with 10+ impressions</p>';
 }
 function renderOpportunities(){
   var members=MORDER.filter(function(x){return mdG[x];});
