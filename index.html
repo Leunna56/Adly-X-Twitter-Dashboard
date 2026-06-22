@@ -368,6 +368,7 @@ async function loadData(){
     var posts=parsed.posts;
     if(!posts.length) throw new Error('No data. Ensure Google Sheet is shared publicly.');
     _allPosts=posts;
+    _allPosts=_allPosts.map(function(p){var d=p["Date"]||"";var m=d.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m){p["Date"]=parseInt(m[2])+"/"+parseInt(m[1])+"/"+m[3];}return p;});
     applyFilter();
   }catch(err){
     var box=document.getElementById('stateBox');
