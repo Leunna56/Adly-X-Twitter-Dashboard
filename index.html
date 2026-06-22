@@ -333,11 +333,32 @@ function renderERBars(md){
   var best=members.reduce(function(b,m){return !b||md[m].er>md[b].er?m:b;},null);
   document.getElementById('erBars').innerHTML=members.map(function(member,i){
     var d=md[member];
-    var pp=Math.round(d.total/maxP*100);
+    var tp=Math.round(d.posts/maxP*100);
+    var rp=Math.round(d.replies/maxP*100);
     var ep=Math.round(d.er/maxE*100);
     var sep=i>0?'border-top:1px solid #1e2235;padding-top:14px;':'';
-    var tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p &middot; '+d.replies+'r</span>';
-    return '<div style="'+sep+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+MC[member]+';margin-right:7px;vertical-align:middle"></span>'+member+'</span>'+tag+'</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:11px;color:#8b90b8;width:42px">Posts</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+pp+'%;height:100%;background:'+MC[member]+';border-radius:4px"></div></div><span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.total+'</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#8b90b8;width:42px">ER</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+ep+'%;height:100%;background:'+MC[member]+';border-radius:4px;opacity:.85"></div></div><span style="font-size:12px;font-weight:700;width:40px;text-align:right">'+d.er.toFixed(1)+'%</span></div></div>';
+    var tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p · '+d.replies+'r</span>';
+    var col=MC[member];
+    return '<div style="'+sep+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<span style="font-size:13px;font-weight:600"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+col+';margin-right:7px;vertical-align:middle"></span>'+member+'</span>'+tag+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">Tweets</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+tp+'%;height:100%;background:'+col+';border-radius:4px"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.posts+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">Replies</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+rp+'%;height:100%;background:'+col+';border-radius:4px;opacity:.5"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.replies+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">ER</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+ep+'%;height:100%;background:'+col+';border-radius:4px;opacity:.85"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:40px;text-align:right">'+d.er.toFixed(1)+'%</span>'+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 function renderTeamTable(md){
