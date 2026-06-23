@@ -128,12 +128,10 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     </div>
     <div class="grid-2" style="margin-bottom:13px">
       <div class="card"><h3>&#127919; Opportunities — From the Data</h3><ul class="item-list" id="opportunities"></ul></div>
-      <div class="card"><h3>&#9989; Action Items — This Period</h3>
-        <ul class="item-list">
-          <li data-icon="&#128994;">Leah: keep the momentum — 46 actions, 18.2% ER leading the team this period</li>
-          <li data-icon="&#128993;">Olibher: increase original posts — 3 posts vs 11 replies; aim for 1 original post per day</li>
-          <li data-icon="&#128994;">All: follow daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep</li>
-          <li data-icon="&#128994;">Olibher/Jen: prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X</li>
+      <div class="card" id="actionItemsCard"><h3 id="actionItemsTitle">&#9989; Action Items — This Period</h3>
+        <div id="actionItemsSub" style="font-size:11px;color:#8b90b8;margin:-6px 0 10px 0"></div>
+        <ul class="item-list" id="actionItemsList">
+          <li data-icon="&#128336;">Loading action items...</li>
         </ul>
       </div>
     </div>
@@ -242,7 +240,7 @@ function compute(posts){
 }
 </script><script>
 let mdG={};
-function render(posts,accounts,m,periods){
+function render(posts,accounts,m,periods,prevP){
   mdG=m.md;
   var mAll=compute(_allPosts);
   document.getElementById('kpiActions').textContent=mAll.total;
@@ -276,6 +274,7 @@ function render(posts,accounts,m,periods){
   renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
+  renderActionItems(prevP||[],periods);
 }
 
 function renderAccounts(posts){
@@ -393,6 +392,50 @@ function renderOpportunities(){
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
+function renderActionItems(prevP,periods){
+  var listEl=document.getElementById('actionItemsList');
+  var subEl=document.getElementById('actionItemsSub');
+  if(!listEl)return;
+  if(!prevP||!prevP.length){
+    if(subEl)subEl.textContent='';
+    listEl.innerHTML='<li data-icon="&#128197;">Select Bi-Weekly or Monthly view to see period-based action items.</li>';
+    return;
+  }
+  var prevM=compute(prevP);
+  var fD=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
+  if(periods&&periods.prevFrom&&subEl){
+    subEl.textContent='Based on '+fD(periods.prevFrom)+' – '+fD(periods.prevTo)+' data';
+  }
+  var items=[];
+  var activeM=MORDER.filter(function(x){return prevM.md[x];});
+  var missingM=MORDER.filter(function(x){return !prevM.md[x];});
+  var bestER=activeM.reduce(function(b,x){return !b||prevM.md[x].er>prevM.md[b].er?x:b;},null);
+  if(bestER){
+    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led last period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
+  }
+  activeM.forEach(function(x){
+    var d=prevM.md[x];
+    if(d&&d.posts<5){
+      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':' s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day'});
+    }
+  });
+  if(missingM.length){
+    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no activity logged last period — daily posting is critical for account growth'});
+  }
+  var totT=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].posts:0);},0);
+  var totR=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].replies:0);},0);
+  if(totR>totT){
+    items.push({icon:'&#128172;',text:'Reply-forward strategy is strong ('+totR+' replies vs '+totT+' original tweets last period) — balance with more original content to build account authority'});
+  }
+  var BRANDS=['PaymentKit','SubDelete','SendScale'];
+  var zeroBrands=BRANDS.filter(function(b){return !prevM.bd[b]||prevM.bd[b].imp===0;});
+  if(zeroBrands.length){
+    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: zero impressions last period — increase X Premium account activity'});
+  }
+  items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
+  items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
+  listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'<\/li>';}).join('');
+}
 async function loadData(){
   var btn=document.getElementById('refreshBtn');
   var icon=document.getElementById('spinIcon');
@@ -459,6 +502,6 @@ function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('
 function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
 function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
 function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
-function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m,periods);}
+function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m,periods,prevP);}
 </script></body>
 </html>
