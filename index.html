@@ -416,7 +416,7 @@ function renderActionItems(prevP,periods){
   activeM.forEach(function(x){
     var d=prevM.md[x];
     if(d&&d.posts<5){
-      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':' s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day'});
+      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day'});
     }
   });
   if(missingM.length){
