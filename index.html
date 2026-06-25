@@ -104,7 +104,20 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
       <div class="kpi-card" style="border-left:3px solid var(--blue)"><div class="kpi-label">Top Brand &mdash; Most Posts<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the most posts + replies logged this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account is getting the most activity volume from the team.</div></div></span></div><div class="kpi-value" id="kpiBrandPosts" style="color:var(--blue)">—</div><div class="kpi-sub" id="kpiBrandPostsSub"></div></div>
       <div class="kpi-card" style="border-left:3px solid var(--green)"><div class="kpi-label">Top Brand &mdash; Best ER<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the highest engagement rate this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account generates the best quality engagement per impression — the real quality signal.</div><div class="t-row"><span class="t-lbl">How computed</span>Brand ER = Total Engagements &divide; Total Impressions &times; 100 across all posts for that brand this period.</div></div></span></div><div class="kpi-value" id="kpiBrandER" style="color:var(--green)">—</div><div class="kpi-sub" id="kpiBrandERSub"></div></div>
     </div>
-    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div><div class="card" style="margin-bottom:13px">
+    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div><div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#127919; Performance Targets — This Period</div>
+    <div class="card" style="margin-bottom:13px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="border-bottom:1px solid #1e2235">
+          <th style="text-align:left;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">KPI</th>
+          <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">This Period</th>
+          <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Target</th>
+          <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Status</th>
+          <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Why</th>
+        </tr></thead>
+        <tbody id="targetsTbody"></tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-bottom:13px">
       <h3 style="display:flex;align-items:center;">X Account Overview<span class="info-wrap" style="margin-left:5px;font-size:12px;"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All linked X/Twitter accounts grouped by brand, with Premium status and active account count.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Gives a quick view of your account infrastructure — which handles are driving data and which need upgrading.</div><div class="t-row"><span class="t-lbl">How computed</span>Pulled from the Account Directory tab; X Premium accounts are those with impressions data available.</div></div></span></h3>
       <div style="display:flex;align-items:center;gap:18px;margin-bottom:12px;font-size:11px;color:var(--muted)">
         <span><span style="color:#1D9E75;font-size:13px">&#9679;</span> X Premium &middot; has data this period</span>
@@ -274,6 +287,8 @@ function render(posts,accounts,m,periods,prevP){
   renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
+  var prevM2=prevP&&prevP.length?compute(prevP):{md:{},bd:{},totImp:0,totEng:0,avgER:0,total:0,activeMembers:[]};
+  renderTargetsTable(m,prevM2);
   renderActionItems(prevP||[],periods);
 }
 
@@ -391,6 +406,42 @@ function renderOpportunities(){
     !mdG['Leah']?{icon:'&#128683;',html:'<strong>SendScale has zero data</strong> - no insights until Leah logs @lestrada_8_3 posts.'}:null
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
+}
+function renderTargetsTable(m,prevM){
+  var tbody=document.getElementById('targetsTbody');
+  if(!tbody)return;
+  function badge(s){var map={green:{icon:'&#128994;',label:'On Target',col:'#1D9E75'},yellow:{icon:'&#128993;',label:'Near Target',col:'#d69e2e'},red:{icon:'&#128308;',label:'Below Target',col:'#e53e3e'}};var x=map[s]||map.red;return'<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:'+x.col+'">'+x.icon+' '+x.label+'</span>';}
+  function tip(rows){var inner=rows.map(function(r){return'<div class="t-row"><span class="t-lbl">'+r[0]+'</span>'+r[1]+'</div>';}).join('');return'<span class="info-wrap" style="vertical-align:middle"><i class="info-btn">i</i><div class="info-tip" style="width:280px;right:0;left:auto">'+inner+'</div></span>';}
+  var curActions=m.total;
+  var curER=m.avgER;
+  var curImp=m.totImp;
+  var prevImp=prevM.totImp||0;
+  var curMembers=m.activeMembers.length;
+  var bestMember=m.activeMembers.reduce(function(b,x){return !b||m.md[x].er>m.md[b].er?x:b;},null);
+  var topER=bestMember?m.md[bestMember].er:0;
+  var impDiff=prevImp>0?curImp-prevImp:0;
+  var impStatus=prevImp===0?'green':curImp>=prevImp?'green':curImp>=prevImp*0.9?'yellow':'red';
+  var rows=[
+    {label:'Total Actions',target:'&#8805; 120 / period',status:curActions>=120?'green':curActions>=80?'yellow':'red',disp:'<strong>'+curActions+'</strong>',
+     tip:tip([['What','Total posts + replies logged by the full team this bi-weekly period.'],['Industry std','X recommends 3–5 posts/day per account. 4 members × 3 actions/day × 14 days = 168 at full cadence.'],['Our target','≥120 actions/period (71% of full cadence). Accounts for weekends and realistic availability.'],['Good / Bad','≥120 = consistent cadence. 80–119 = acceptable with reason. <80 = significant gaps.']])},
+    {label:'Avg Engagement Rate',target:'&#8805; 10%',status:curER>=10?'green':curER>=5?'yellow':'red',disp:'<strong>'+curER.toFixed(1)+'%</strong>',
+     tip:tip([['What','Total engagements ÷ impressions × 100 across all logged posts this period.'],['Industry std','X/Twitter avg ER is 0.5–1%. B2B SaaS averages 1–3%. Only targeted niche strategies exceed 10%.'],['Our target','≥10% — reply-forward strategy in merchant/SaaS verticals. High-intent threads drive higher ER.'],['Good / Bad','≥10% = resonating. 5–9% = targeting needs work. <5% = wrong threads or too generic.']])},
+    {label:'Impressions',target:'&#8593; vs prev period',status:impStatus,disp:'<strong>'+curImp.toLocaleString()+'</strong>'+(prevImp>0?' <span style="font-size:11px;color:'+(impDiff>=0?'#1D9E75':'#e53e3e')+'">'+( impDiff>=0?'&#9650;':'&#9660;')+' '+Math.abs(impDiff).toLocaleString()+'</span>':'(no prev data)'),
+     tip:tip([['What','Sum of all impressions logged for posts this period — how many times team posts were seen on X.'],['Industry std','Absolute impressions depend on follower count. For small-account portfolios, growth trend matters more.'],['Our target','Period-over-period growth. No flat number — the goal is reaching more people each period.'],['Good / Bad','&#8593; vs prev = reaching more people. &#8595; two periods in a row = investigate timing, content, or reach.']])},
+    {label:'Active Members',target:'4 / 4',status:curMembers===4?'green':curMembers===3?'yellow':'red',disp:'<strong>'+curMembers+' / 4</strong>'+(curMembers<4?' <span style="font-size:11px;color:#8b90b8">('+m.activeMembers.join(', ')+')</span>':'  &#10004;'),
+     tip:tip([['What','Number of team members (out of 4) who logged at least 1 post this bi-weekly period.'],['Industry std','100% participation expected — one inactive member means accounts go dark.'],['Our target','All 4 members (Leah, Jen, Jes, Olibher) active every period. No exceptions.'],['Good / Bad','4/4 = full coverage. 3/4 = acceptable with reason. <3 = critical, accounts being neglected.']])},
+    {label:'Top Member ER',target:'&#8805; 15%',status:topER>=15?'green':topER>=10?'yellow':'red',disp:bestMember?'<strong>'+topER.toFixed(1)+'%</strong> <span style="font-size:11px;color:#8b90b8">('+bestMember+')</span>':'N/A',
+     tip:tip([['What','Highest individual ER among all active members this period — sets the bar for the best performer.'],['Industry std','Individual creator ER on X averages 1–5%. Top B2B niche accounts rarely exceed 8%.'],['Our target','≥15% for the top performer — at this level, the targeted reply strategy is working as intended.'],['Good / Bad','≥15% = strategy working. 10–14% = close but not in the best threads. <10% = even top performer underdelivering.']])}
+  ];
+  tbody.innerHTML=rows.map(function(row,i){var sep=i>0?'border-top:1px solid #1e2235;':'';
+    return'<tr style="'+sep+'">'+
+      '<td style="padding:10px;font-size:13px;font-weight:600;color:#e2e8f0">'+row.label+'</td>'+
+      '<td style="padding:10px;text-align:right;font-size:13px;color:#a78bfa">'+row.disp+'</td>'+
+      '<td style="padding:10px;text-align:right;font-size:12px;color:#8b90b8">'+row.target+'</td>'+
+      '<td style="padding:10px;text-align:center">'+badge(row.status)+'</td>'+
+      '<td style="padding:10px;text-align:center">'+row.tip+'</td>'+
+    '</tr>';
+  }).join('');
 }
 function renderActionItems(prevP,periods){
   var listEl=document.getElementById('actionItemsList');
