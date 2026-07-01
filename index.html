@@ -293,7 +293,7 @@ function render(posts,accounts,m,periods,prevP){
 }
 
 function renderAccounts(posts){
-  var ACCTS={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
+  var ACCTS={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'},{h:'MerchantRiskDsk'}],SubDelete:[{h:'buildwithpurple'},{h:'Ronaldp38dy'},{h:'CalebSmith8oea1'},{h:'SuzieLeeu95k'}],SendScale:[{h:'lestrada_8_3'}]};
   var activeH=new Set(posts.map(function(p){var lnk=p['Post Link']||'';var m=lnk.match(/x\.com\/([^\/]+)\//);return m?m[1].toLowerCase():'';}).filter(Boolean));
   var totalA=0,premA=0;
   Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(activeH.has(a.h.toLowerCase()))premA++;});});
