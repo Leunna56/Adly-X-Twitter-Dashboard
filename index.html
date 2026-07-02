@@ -290,6 +290,7 @@ function render(posts,accounts,m,periods,prevP){
   var prevM2=prevP&&prevP.length?compute(prevP):{md:{},bd:{},totImp:0,totEng:0,avgER:0,total:0,activeMembers:[]};
   renderTargetsTable(m,prevM2);
   renderActionItems(prevP||[],periods);
+  renderFindings(m,periods);
 }
 
 function renderAccounts(posts){
@@ -482,6 +483,22 @@ function renderActionItems(prevP,periods){
   items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
   items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
   listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'<\/li>';}).join('');
+}
+function renderFindings(m,periods){
+  var el=document.getElementById('findingReply');
+  if(!el)return;
+  var totP=m.activeMembers.reduce(function(s,x){return s+(m.md[x]?m.md[x].posts:0);},0);
+  var totR=m.activeMembers.reduce(function(s,x){return s+(m.md[x]?m.md[x].replies:0);},0);
+  var best=m.activeMembers.reduce(function(b,x){return !b||m.md[x].er>m.md[b].er?x:b;},null);
+  var range='';
+  if(periods&&periods.curFrom&&periods.curTo){
+    var fD2=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});};
+    range=' logged '+fD2(periods.curFrom)+'–'+fD2(periods.curTo);
+  }
+  var txt=totR+' replies vs '+totP+' original posts'+range+'.';
+  if(best){txt+=' '+best+'\u2019s '+m.md[best].replies+'-reply, '+m.md[best].posts+'-post mix is driving a '+m.md[best].er.toFixed(1)+'% ER \u2014 the highest on the team this period.';}
+  txt+=totR>totP?' Reply-forward strategy continues to outperform across all members.':' Original post volume is leading this period \u2014 strong content creation momentum.';
+  el.textContent=txt;
 }
 async function loadData(){
   var btn=document.getElementById('refreshBtn');
