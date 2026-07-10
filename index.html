@@ -104,7 +104,13 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
       <div class="kpi-card" style="border-left:3px solid var(--blue)"><div class="kpi-label">Top Brand &mdash; Most Posts<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the most posts + replies logged this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account is getting the most activity volume from the team.</div></div></span></div><div class="kpi-value" id="kpiBrandPosts" style="color:var(--blue)">—</div><div class="kpi-sub" id="kpiBrandPostsSub"></div></div>
       <div class="kpi-card" style="border-left:3px solid var(--green)"><div class="kpi-label">Top Brand &mdash; Best ER<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the highest engagement rate this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account generates the best quality engagement per impression — the real quality signal.</div><div class="t-row"><span class="t-lbl">How computed</span>Brand ER = Total Engagements &divide; Total Impressions &times; 100 across all posts for that brand this period.</div></div></span></div><div class="kpi-value" id="kpiBrandER" style="color:var(--green)">—</div><div class="kpi-sub" id="kpiBrandERSub"></div></div>
     </div>
-    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div><div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#127919; Performance Targets — This Period</div>
+    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div>    <div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#128200; Progress Over Time</div>
+    <div class="card" id="trendCard" style="margin-bottom:13px">
+      <div id="trendStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+      <canvas id="trendCanvas" height="180"></canvas>
+      <div id="trendChartNote" style="font-size:11px;color:#8b90b8;margin-top:8px;text-align:center"></div>
+    </div>
+    <div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#127919; Performance Targets — This Period</div>
     <div class="card" style="margin-bottom:13px">
       <table style="width:100%;border-collapse:collapse">
         <thead><tr style="border-bottom:1px solid #1e2235">
@@ -291,6 +297,7 @@ function render(posts,accounts,m,periods,prevP){
   renderTargetsTable(m,prevM2);
   renderActionItems(prevP||[],periods);
   renderFindings(m,periods);
+  renderTrendSection(_allPosts);
 }
 
 function renderAccounts(posts){
@@ -483,6 +490,81 @@ function renderActionItems(prevP,periods){
   items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
   items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
   listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'<\/li>';}).join('');
+}
+function renderTrendSection(allPosts){
+  var statsEl=document.getElementById('trendStats');
+  var canvasEl=document.getElementById('trendCanvas');
+  if(!statsEl||!canvasEl||!allPosts||!allPosts.length)return;
+  var anchor=new Date(2026,4,18);
+  var now=new Date();
+  var tData=[];
+  var d=new Date(anchor);
+  function fmt(date){return date.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+  while(d<=now){
+    var fr=new Date(d);
+    var to=new Date(d);
+    to.setDate(to.getDate()+13);
+    to.setHours(23,59,59);
+    var pp=filterByDate(allPosts,fr,to);
+    if(pp.length>0){
+      var pm=compute(pp);
+      tData.push({label:fmt(fr)+'–'+fmt(to),actions:pm.total,impressions:pm.totImp,er:parseFloat(pm.avgER.toFixed(1)),members:pm.activeMembers.length});
+    }
+    d.setDate(d.getDate()+14);
+  }
+  if(!tData.length)return;
+  var first=tData[0],last=tData[tData.length-1];
+  function pct(a,b){if(!a)return null;return((b-a)/a*100).toFixed(0);}
+  var stats=[
+    {label:'Total Actions',first:first.actions,last:last.actions,fmt:function(v){return v;}},
+    {label:'Impressions',first:first.impressions,last:last.impressions,fmt:function(v){return v.toLocaleString();}},
+    {label:'Avg ER',first:first.er,last:last.er,suf:'%',fmt:function(v){return v.toFixed(1);}},
+    {label:'Active Members',first:first.members,last:last.members,fmt:function(v){return v;}}
+  ];
+  statsEl.innerHTML=stats.map(function(s){
+    var p2=pct(s.first,s.last);
+    var up=p2!==null&&parseFloat(p2)>=0;
+    var col=up?'#1D9E75':'#e53e3e';
+    var arr=up?'&#9650;':'&#9660;';
+    var suf=s.suf||'';
+    return '<div style="background:#0f1524;border-radius:8px;padding:12px;text-align:center">'+
+      '<div style="font-size:11px;color:#8b90b8;margin-bottom:8px;font-weight:600">'+s.label+'</div>'+
+      '<div style="font-size:10px;color:#8b90b8">First period</div>'+
+      '<div style="font-size:13px;color:#e2e8f0;font-weight:600">'+s.fmt(s.first)+suf+'</div>'+
+      '<div style="font-size:10px;color:#8b90b8;margin-top:6px">Now</div>'+
+      '<div style="font-size:20px;color:#a78bfa;font-weight:700">'+s.fmt(s.last)+suf+'</div>'+
+      (p2!==null?'<div style="font-size:11px;color:'+col+';margin-top:4px">'+arr+' '+Math.abs(p2)+'%</div>':'')+
+      '</div>';
+  }).join('');
+  if(window._trendChart){window._trendChart.destroy();}
+  var labels=tData.map(function(p){return p.label;});
+  window._trendChart=new Chart(canvasEl,{
+    type:'line',
+    data:{
+      labels:labels,
+      datasets:[
+        {label:'Total Actions',data:tData.map(function(p){return p.actions;}),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
+        {label:'Impressions',data:tData.map(function(p){return p.impressions;}),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
+        {label:'Avg ER %',data:tData.map(function(p){return p.er;}),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y2'},
+        {label:'Active Members',data:tData.map(function(p){return p.members;}),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#a0a8c0',font:{size:11},padding:16}},
+        tooltip:{backgroundColor:'#1a2035',titleColor:'#e2e8f0',bodyColor:'#a0a8c0',padding:10}
+      },
+      scales:{
+        x:{ticks:{color:'#8b90b8',font:{size:10}},grid:{color:'#1e2235'}},
+        y:{type:'linear',position:'left',ticks:{color:'#8b90b8',font:{size:10}},grid:{color:'#1e2235'},title:{display:true,text:'Actions / Impressions',color:'#8b90b8',font:{size:10}}},
+        y2:{type:'linear',position:'right',ticks:{color:'#8b90b8',font:{size:10}},grid:{drawOnChartArea:false},title:{display:true,text:'ER % / Members',color:'#8b90b8',font:{size:10}}}
+      }
+    }
+  });
+  var noteEl=document.getElementById('trendChartNote');
+  if(noteEl)noteEl.textContent=tData.length+' bi-weekly periods · Actions & Impressions on left axis · ER % & Active Members on right';
 }
 function renderFindings(m,periods){
   var el=document.getElementById('findingReply');
