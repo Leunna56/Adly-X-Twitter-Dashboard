@@ -295,7 +295,7 @@ function render(posts,accounts,m,periods,prevP){
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
   var prevM2=prevP&&prevP.length?compute(prevP):{md:{},bd:{},totImp:0,totEng:0,avgER:0,total:0,activeMembers:[]};
   renderTargetsTable(m,prevM2);
-  renderActionItems(curP||[],periods);
+  renderActionItems(posts||[],periods);
   renderFindings(m,periods);
   renderTrendSection(_allPosts);
 }
