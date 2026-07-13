@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .container{padding:18px 26px;max-width:1400px;margin:0 auto}
 .state-box{text-align:center;padding:70px 20px;color:var(--muted);font-size:15px}
 .state-box.err{color:var(--red)}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:13px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
 .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:17px;position:relative}
 .kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .kpi-value{font-size:30px;font-weight:700;line-height:1}.kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
@@ -72,7 +72,6 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
 .t-row{margin-bottom:6px;}.t-row:last-child{margin-bottom:0;}
 .t-lbl{font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);display:block;margin-bottom:2px;}
 .kpi-label{display:flex;align-items:center;}
-.section-header{padding:6px 0 10px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-top:1px solid var(--border);margin-top:6px;padding-top:14px;}
 </style>
 </head>
 <body>
@@ -89,58 +88,41 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     </button>
   </div>
 </div>
-<div class="alert-banner" id="alertBanner" style="display:none">
+<div id="filterBar" style="background:#0d1117;padding:10px 24px;border-bottom:1px solid #1e2235;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:12px;color:#8b90b8">Period</span><button class="pb active" data-p="bw" onclick="setPeriod('bw')">Bi-Weekly</button><button class="pb" data-p="mo" onclick="setPeriod('mo')">Monthly</button><button class="pb" data-p="all" onclick="setPeriod('all')">All Time</button><span style="font-size:12px;color:#8b90b8;margin-left:8px">From</span><input type="date" id="fromDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><span style="color:#8b90b8">to</span><input type="date" id="toDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><button onclick="resetPeriod()" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px">Reset</button></div><div class="alert-banner" id="alertBanner" style="display:none">
   &#9888;&#65039; <strong>Data Gap:</strong> <span id="alertText"></span>
 </div>
 <div class="container">
   <div id="stateBox" class="state-box">&#8635; Fetching live data from Google Sheet…</div>
   <div id="dashboard" style="display:none">
-
-    <!-- ═══ ALL TIME OVERVIEW ═══ -->
-    <div class="section-header">&#128202; All Time Overview</div>
-    <div class="kpi-grid">
-      <div class="kpi-card blue"><div class="kpi-label">Total Actions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All posts and replies ever logged by the team.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Core activity metric — shows total team output since tracking began.</div><div class="t-row"><span class="t-lbl">How computed</span>Total row count in the Google Sheet across all dates.</div></div></span></div><div class="kpi-value" id="kpiActions">—</div><div class="kpi-sub">posts + replies logged</div></div>
-      <div class="kpi-card purple"><div class="kpi-label">Total Impressions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Sum of all impressions across every logged post and reply.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Measures total reach achieved since tracking began.</div><div class="t-row"><span class="t-lbl">How computed</span>Sum of the Impressions column for all logged actions.</div></div></span></div><div class="kpi-value" id="kpiImpressions">—</div><div class="kpi-sub">across all logged posts</div></div>
-      <div class="kpi-card green"><div class="kpi-label">Avg ER — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Average engagement rate across all logged actions ever.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Quality baseline — 1-3% typical on X, 5%+ strong.</div><div class="t-row"><span class="t-lbl">How computed</span>Total Engagements ÷ Total Impressions × 100, all time.</div></div></span></div><div class="kpi-value" id="kpiER">—</div><div class="kpi-sub">engagements ÷ impressions</div></div>
-      <div class="kpi-card amber"><div class="kpi-label">Active Members — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Team members who have logged at least one action ever.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Tracks total team participation since launch.</div><div class="t-row"><span class="t-lbl">How computed</span>Count of distinct agent names across all logged actions.</div></div></span></div><div class="kpi-value" id="kpiMembers">—</div><div class="kpi-sub" id="kpiMemberSub"></div></div>
+    <div style="padding:6px 0 10px;font-size:11px;font-weight:700;color:#8b90b8;text-transform:uppercase;letter-spacing:.6px;border-top:1px solid #2e3250;margin-top:6px;padding-top:14px;">📊 All Time Overview</div><div class="kpi-grid">
+      <div class="kpi-card blue"><div class="kpi-label">Total Actions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All posts and replies logged by the team this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Core activity metric — shows how actively the team is engaging on X.</div><div class="t-row"><span class="t-lbl">How computed</span>Row count in the Google Sheet filtered to the current period.</div></div></span></div><div class="kpi-value" id="kpiActions">—</div><div class="kpi-sub">posts + replies logged</div></div>
+      <div class="kpi-card purple"><div class="kpi-label">Total Impressions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Sum of all impressions across logged posts and replies.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Measures reach — how many times your content appeared in feeds.</div><div class="t-row"><span class="t-lbl">How computed</span>Sum of the Impressions column for all logged actions.</div></div></span></div><div class="kpi-value" id="kpiImpressions">—</div><div class="kpi-sub">across all logged posts</div></div>
+      <div class="kpi-card green"><div class="kpi-label">Avg Engagement Rate<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Average engagement rate across all logged actions.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Quality metric — 1-3% typical on X, 5%+ strong. Higher = content resonates.</div><div class="t-row"><span class="t-lbl">How computed</span>Total Engagements divided by Total Impressions x 100, across all logged posts.</div></div></span></div><div class="kpi-value" id="kpiER">—</div><div class="kpi-sub">engagements ÷ impressions</div></div>
+      <div class="kpi-card amber"><div class="kpi-label">Active Members — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Team members who logged at least one post or reply this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Tracks participation across the 4-person team.</div><div class="t-row"><span class="t-lbl">How computed</span>Count of distinct agent names with at least 1 logged action in the current period.</div></div></span></div><div class="kpi-value" id="kpiMembers">—</div><div class="kpi-sub" id="kpiMemberSub"></div></div>
     </div>
     <div class="grid-2" style="margin-bottom:13px">
-      <div class="kpi-card" style="border-left:3px solid var(--blue)"><div class="kpi-label">Top Brand — Most Posts (All Time)<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the most posts + replies logged all time.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account has received the most total activity.</div></div></span></div><div class="kpi-value" id="kpiBrandPosts" style="color:var(--blue)">—</div><div class="kpi-sub" id="kpiBrandPostsSub"></div></div>
-      <div class="kpi-card" style="border-left:3px solid var(--green)"><div class="kpi-label">Top Brand — Best ER (All Time)<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the highest engagement rate across all time.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account generates the best quality engagement per impression.</div><div class="t-row"><span class="t-lbl">How computed</span>Brand ER = Total Engagements ÷ Total Impressions × 100, all time.</div></div></span></div><div class="kpi-value" id="kpiBrandER" style="color:var(--green)">—</div><div class="kpi-sub" id="kpiBrandERSub"></div></div>
+      <div class="kpi-card" style="border-left:3px solid var(--blue)"><div class="kpi-label">Top Brand &mdash; Most Posts<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the most posts + replies logged this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account is getting the most activity volume from the team.</div></div></span></div><div class="kpi-value" id="kpiBrandPosts" style="color:var(--blue)">—</div><div class="kpi-sub" id="kpiBrandPostsSub"></div></div>
+      <div class="kpi-card" style="border-left:3px solid var(--green)"><div class="kpi-label">Top Brand &mdash; Best ER<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Brand with the highest engagement rate this period.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Shows which client account generates the best quality engagement per impression — the real quality signal.</div><div class="t-row"><span class="t-lbl">How computed</span>Brand ER = Total Engagements &divide; Total Impressions &times; 100 across all posts for that brand this period.</div></div></span></div><div class="kpi-value" id="kpiBrandER" style="color:var(--green)">—</div><div class="kpi-sub" id="kpiBrandERSub"></div></div>
     </div>
-
-    <!-- ═══ PERIOD FILTER + BI-WEEKLY SUMMARY ═══ -->
-    <div class="section-header">&#128197; Current Period Performance</div>
-    <div id="filterBar" style="background:#0d1117;padding:10px 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px"><span style="font-size:12px;color:#8b90b8">Period</span><button class="pb active" data-p="bw" onclick="setPeriod('bw')">Bi-Weekly</button><button class="pb" data-p="mo" onclick="setPeriod('mo')">Monthly</button><button class="pb" data-p="all" onclick="setPeriod('all')">All Time</button><span style="font-size:12px;color:#8b90b8;margin-left:8px">From</span><input type="date" id="fromDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><span style="color:#8b90b8">to</span><input type="date" id="toDate" style="background:#1e2235;border:1px solid #2d3555;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px" onchange="applyFilter()"><button onclick="resetPeriod()" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px">Reset</button></div>
-    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 0 16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">&#9664; Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div>
-
-    <!-- ═══ PROGRESS OVER TIME ═══ -->
-    <div class="section-header" style="margin-top:14px">&#128200; Progress Over Time</div>
+    <div id="summaryBar" style="background:#111827;border-bottom:2px solid #1e2235;padding:16px 24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:#e2e8f0">Bi-Weekly Summary</span><span id="sumCurPeriod" style="font-size:13px;color:#a78bfa;font-weight:600"></span><span style="font-size:12px;color:#555">vs</span><span id="sumPrevPeriod" style="font-size:12px;color:#8b90b8"></span><button onclick="shiftPeriod(1)" style="margin-left:auto;background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Previous</button><button onclick="shiftPeriod(-1)" id="sumNextBtn" style="background:#1e2235;border:1px solid #2d3555;color:#8b90b8;padding:4px 14px;border-radius:6px;cursor:pointer;font-size:12px">Next</button></div><div id="summaryCards" style="display:flex;gap:12px;flex-wrap:wrap"></div></div>    <div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#128200; Progress Over Time</div>
     <div class="card" id="trendCard" style="margin-bottom:13px">
-      <div id="trendStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px"></div>
+      <div id="trendStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
       <canvas id="trendCanvas" height="110"></canvas>
       <div id="trendChartNote" style="font-size:11px;color:#8b90b8;margin-top:8px;text-align:center"></div>
     </div>
-
-    <!-- ═══ PERFORMANCE TARGETS ═══ -->
-    <div class="section-header" style="margin-top:14px">&#127919; Performance Targets — This Period</div>
+    <div class="section-header" style="margin-top:14px;margin-bottom:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#127919; Performance Targets — This Period</div>
     <div class="card" style="margin-bottom:13px">
       <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:1px solid #1e2235">
-            <th style="text-align:left;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">KPI</th>
-            <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">This Period</th>
-            <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Target</th>
-            <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Status</th>
-            <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Rationale</th>
-          </tr>
-        </thead>
+        <thead><tr style="border-bottom:1px solid #1e2235">
+          <th style="text-align:left;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">KPI</th>
+          <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">This Period</th>
+          <th style="text-align:right;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Target</th>
+          <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Status</th>
+          <th style="text-align:center;padding:8px 10px;font-size:11px;color:#8b90b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Rationale</th>
+        </tr></thead>
         <tbody id="targetsTbody"></tbody>
       </table>
     </div>
-
-    <!-- ═══ CHARTS & TABLES (period-filtered) ═══ -->
-    <div class="section-header">&#128293; Period Breakdown</div>
     <div class="card" style="margin-bottom:13px">
       <h3 style="display:flex;align-items:center;">X Account Overview<span class="info-wrap" style="margin-left:5px;font-size:12px;"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All linked X/Twitter accounts grouped by brand, with Premium status and active account count.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Gives a quick view of your account infrastructure — which handles are driving data and which need upgrading.</div><div class="t-row"><span class="t-lbl">How computed</span>Pulled from the Account Directory tab; X Premium accounts are those with impressions data available.</div></div></span></h3>
       <div style="display:flex;align-items:center;gap:18px;margin-bottom:12px;font-size:11px;color:var(--muted)">
@@ -174,8 +156,8 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     </div>
     <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600">&#128161; Key Findings</div>
     <div class="findings-grid">
-      <div class="finding-card green-f"><h4>&#128257; Reply Strategy is Winning</h4><p id="findingReply">63 replies vs 44 original posts logged Jun 1&#8211;14. Leah&#8217;s 30-reply, 16-post mix is driving an 18.2% ER &#8212; the highest on the team. Reply-forward strategy continues to outperform across all members.</p></div>
-      <div class="finding-card blue-f"><h4>&#128202; How This Dashboard Gets Its Data</h4><p>All post-level activity is logged manually by the team in the <strong>Adly X Twitter Project Google Sheet</strong>. This dashboard fetches live data directly from that sheet &#8212; hit <strong>Refresh Data</strong> anytime new posts have been logged.</p></div>
+      <div class="finding-card green-f"><h4>&#128257; Reply Strategy is Winning</h4><p id="findingReply">63 replies vs 44 original posts logged Jun 1–14. Leah’s 30-reply, 16-post mix is driving an 18.2% ER — the highest on the team. Reply-forward strategy continues to outperform across all members.</p></div>
+      <div class="finding-card blue-f"><h4>&#128202; How This Dashboard Gets Its Data</h4><p>All post-level activity is logged manually by the team in the <strong>Adly X Twitter Project Google Sheet</strong>. This dashboard fetches live data directly from that sheet — hit <strong>Refresh Data</strong> anytime new posts have been logged.</p></div>
     </div>
   </div>
 </div>
@@ -279,15 +261,13 @@ function compute(posts){
 let mdG={};
 function render(posts,accounts,m,periods,prevP){
   mdG=m.md;
-  // ── Top KPIs always use ALL TIME data (_allPosts) ──────────────────────────
   var mAll=compute(_allPosts);
   document.getElementById('kpiActions').textContent=mAll.total;
   document.getElementById('kpiImpressions').textContent=mAll.totImp.toLocaleString();
   document.getElementById('kpiER').textContent=mAll.avgER.toFixed(1)+'%';
-  var allActive=mAll.activeMembers;
-  document.getElementById('kpiMembers').textContent=allActive.length+' / 4';
-  document.getElementById('kpiMemberSub').textContent=allActive.join(' · ');
-  // All-time brand KPIs
+  const active=mAll.activeMembers;
+  document.getElementById('kpiMembers').textContent=active.length+' / 4';
+  document.getElementById('kpiMemberSub').textContent=active.join(' \u00B7 ');
   var _bM={},_bEng={},_bImp={};
   _allPosts.forEach(function(p){var b=normBrand(p['Brand']||'')||p['Brand']||'';if(b){_bM[b]=(_bM[b]||0)+1;_bEng[b]=(_bEng[b]||0)+(parseFloat(p['Engagements'])||0);_bImp[b]=(_bImp[b]||0)+(parseFloat(p['Impressions'])||0);}});
   var _bKeys=Object.keys(_bM);
@@ -299,19 +279,17 @@ function render(posts,accounts,m,periods,prevP){
     if(bpEl){bpEl.textContent=_topP;document.getElementById('kpiBrandPostsSub').textContent=_bM[_topP]+' posts all time';}
     if(berEl){berEl.textContent=_topER;document.getElementById('kpiBrandERSub').textContent=_erPct+' ER all time';}
   }
-  // ── Header shows all-time range ───────────────────────────────────────────
-  var allDates=_allPosts.map(function(p){return new Date(p['Date']);}).filter(function(d){return !isNaN(d.getTime());}).sort(function(a,b){return a-b;});
-  var fmtD=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
-  if(allDates.length){
-    document.getElementById('periodMeta').textContent='Data: '+fmtD(allDates[0])+' – '+fmtD(allDates[allDates.length-1])+' · '+_allPosts.length+' total entries';
+  const dates=posts.map(p=>new Date(p['Date'])).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
+  if(dates.length){
+    const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    var allD=_allPosts.map(function(p){return new Date(p['Date']);}).filter(function(d){return !isNaN(d);}).sort(function(a,b){return a-b;});if(allD.length){document.getElementById('periodMeta').textContent='Data: '+fmtD(allD[0])+' – '+fmtD(allD[allD.length-1])+' · '+_allPosts.length+' total entries';}
   }
-  var now=new Date();
+  const now=new Date();
   document.getElementById('lastUpdated').textContent='Updated '+now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  document.getElementById('liveDate').textContent='Live · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('liveDate').textContent='Live \u00B7 '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('footerDate').textContent=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   if(!m.md['Leah']){document.getElementById('alertBanner').style.display='flex';document.getElementById('alertText').textContent="Leah's @lestrada_8_3 posts are not yet logged.";}
   else document.getElementById('alertBanner').style.display='none';
-  // ── Charts use current period data (m) ────────────────────────────────────
   renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
@@ -377,11 +355,32 @@ function renderERBars(md){
   var best=members.reduce(function(b,m){return !b||md[m].er>md[b].er?m:b;},null);
   document.getElementById('erBars').innerHTML=members.map(function(member,i){
     var d=md[member];
-    var pp=Math.round(d.total/maxP*100);
+    var tp=Math.round(d.posts/maxP*100);
+    var rp=Math.round(d.replies/maxP*100);
     var ep=Math.round(d.er/maxE*100);
     var sep=i>0?'border-top:1px solid #1e2235;padding-top:14px;':'';
-    var tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p @middot; '+d.replies+'r</span>';
-    return '<div style="'+sep+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+MC[member]+';margin-right:7px;vertical-align:middle"></span>'+member+'</span>'+tag+'</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:11px;color:#8b90b8;width:42px">Posts</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+pp+'%;height:100%;background:'+MC[member]+';border-radius:4px"></div></div><span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.total+'</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#8b90b8;width:42px">ER</span><div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+ep+'%;height:100%;background:'+MC[member]+';border-radius:4px;opacity:.85"></div></div><span style="font-size:12px;font-weight:700;width:40px;text-align:right">'+d.er.toFixed(1)+'%</span></div></div>';
+    var tag=member===best?'<span style="font-size:11px;color:#1D9E75;font-weight:600">&#11088; Best ER this period</span>':'<span style="font-size:11px;color:#8b90b8">'+d.posts+'p · '+d.replies+'r</span>';
+    var col=MC[member];
+    return '<div style="'+sep+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<span style="font-size:13px;font-weight:600"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+col+';margin-right:7px;vertical-align:middle"></span>'+member+'</span>'+tag+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">Tweets</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+tp+'%;height:100%;background:'+col+';border-radius:4px"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.posts+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">Replies</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+rp+'%;height:100%;background:'+col+';border-radius:4px;opacity:.5"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:24px;text-align:right">'+d.replies+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+        '<span style="font-size:11px;color:#8b90b8;width:46px">ER</span>'+
+        '<div style="flex:1;height:7px;background:#1e2235;border-radius:4px"><div style="width:'+ep+'%;height:100%;background:'+col+';border-radius:4px;opacity:.85"></div></div>'+
+        '<span style="font-size:12px;font-weight:700;width:40px;text-align:right">'+d.er.toFixed(1)+'%</span>'+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 function renderTeamTable(md){
@@ -403,31 +402,24 @@ function renderTopPosts(byEng,byER){
   document.getElementById('topPostsByEng').innerHTML=byEng.length?byEng.map(function(p,i){return mkItem(p,i,'eng');}).join(''):'<p style="color:#8b90b8;font-size:12px;">No data</p>';
   document.getElementById('topPostsByER').innerHTML=byER.length?byER.map(function(p,i){return mkItem(p,i,'er');}).join(''):'<p style="color:#8b90b8;font-size:12px;">No posts with 10+ impressions</p>';
 }
-function renderOpportunities(m){
-  var members=MORDER.filter(function(x){return m.md[x];});
-  var best=members.reduce(function(b,x){return !b||m.md[x].er>m.md[b].er?x:b;},null);
-  var totP=members.reduce(function(s,x){return s+m.md[x].posts;},0);
-  var totR=members.reduce(function(s,x){return s+m.md[x].replies;},0);
+function renderOpportunities(){
+  var members=MORDER.filter(function(x){return mdG[x];});
+  var best=members.reduce(function(b,x){return !b||mdG[x].er>mdG[b].er?x:b;},null);
+  var totP=members.reduce(function(s,x){return s+mdG[x].posts;},0);
+  var totR=members.reduce(function(s,x){return s+mdG[x].replies;},0);
   var items=[
     {icon:'&#128200;',html:'<strong>'+(totR>totP?'Replies outperform original posts':'Original posts leading this period')+'</strong> - '+totR+' replies vs '+totP+' posts.'},
-    best?{icon:'&#11088;',html:'<strong>'+best+' leads with '+m.md[best].er.toFixed(1)+'% ER</strong> - '+m.md[best].total+' total actions logged.'}:null,
+    best?{icon:'&#11088;',html:'<strong>'+best+' leads with '+mdG[best].er.toFixed(1)+'% ER</strong> - '+mdG[best].total+' total actions logged.'}:null,
     {icon:'&#128202;',html:'<strong>Jen and Jes logging strong volume</strong> - increasing Olibher original posts is low-risk.'},
-    !m.md['Leah']?{icon:'&#128683;',html:'<strong>SendScale has zero data</strong> - no insights until Leah logs @lestrada_8_3 posts.'}:null
+    !mdG['Leah']?{icon:'&#128683;',html:'<strong>SendScale has zero data</strong> - no insights until Leah logs @lestrada_8_3 posts.'}:null
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
 function renderTargetsTable(m,prevM){
   var tbody=document.getElementById('targetsTbody');
   if(!tbody)return;
-  function badge(s){
-    var map={green:{icon:'&#128994;',label:'On Target',col:'#1D9E75'},yellow:{icon:'&#128993;',label:'Near Target',col:'#d69e2e'},red:{icon:'&#128308;',label:'Below Target',col:'#e53e3e'}};
-    var x=map[s]||map.red;
-    return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:'+x.col+'">'+x.icon+' '+x.label+'</span>';
-  }
-  function tip(rows){
-    var inner=rows.map(function(r){return'<div class="t-row"><span class="t-lbl">'+r[0]+'</span>'+r[1]+'</div>';}).join('');
-    return'<span class="info-wrap" style="vertical-align:middle"><i class="info-btn">i</i><div class="info-tip" style="width:280px;right:0;left:auto">'+inner+'</div></span>';
-  }
+  function badge(s){var map={green:{icon:'&#128994;',label:'On Target',col:'#1D9E75'},yellow:{icon:'&#128993;',label:'Near Target',col:'#d69e2e'},red:{icon:'&#128308;',label:'Below Target',col:'#e53e3e'}};var x=map[s]||map.red;return'<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:'+x.col+'">'+x.icon+' '+x.label+'</span>';}
+  function tip(rows){var inner=rows.map(function(r){return'<div class="t-row"><span class="t-lbl">'+r[0]+'</span>'+r[1]+'</div>';}).join('');return'<span class="info-wrap" style="vertical-align:middle"><i class="info-btn">i</i><div class="info-tip" style="width:280px;right:0;left:auto">'+inner+'</div></span>';}
   var curActions=m.total;
   var curER=m.avgER;
   var curImp=m.totImp;
@@ -438,50 +430,16 @@ function renderTargetsTable(m,prevM){
   var impDiff=prevImp>0?curImp-prevImp:0;
   var impStatus=prevImp===0?'green':curImp>=prevImp?'green':curImp>=prevImp*0.9?'yellow':'red';
   var rows=[
-    {
-      label:'Total Actions',
-      cur:curActions,
-      target:'&#8805; 120 / period',
-      status:curActions>=120?'green':curActions>=80?'yellow':'red',
-      disp:'<strong>'+curActions+'</strong>',
-      tip:tip([
-        ['What','Total posts + replies logged by the full team this bi-weekly period.'],
-        ['Industry std','X recommends 3–5 posts/day per account. At 4 members × 3 actions/day × 14 days = 168 actions at full cadence.'],
-        ['Our target','≥120 actions/period (71% of full cadence). Accounts for weekends and realistic availability.'],
-        ['Good','≥120 = consistent cadence. 80–119 = acceptable with reason. <80 = significant gaps in team activity.']
-      ])
-    },
-    {
-      label:'Avg Engagement Rate',
-      cur:curER,
-      target:'&#8805; 10%',
-      status:curER>=10?'green':curER>=5?'yellow':'red',
-      disp:'<strong>'+curER.toFixed(1)+'%</strong>',
-      tip:tip([
-        ['What','Total engagements ÷ total impressions × 100 across all logged posts this period.'],
-        ['Industry std','X/Twitter average ER is 0.5–1% for most accounts. B2B SaaS averages 1–3%. Only highly targeted niche strategies exceed 10%.'],
-        ['Our target','≥10% — we run a reply-forward strategy in merchant/SaaS verticals where threads are high-intent, naturally driving higher ER.'],
-        ['Good','≥10% = resonating in the right conversations. 5–9% = targeting needs improvement. <5% = wrong threads or too generic.']
-      ])
-    },
-    {
-      label:'Impressions',
-      cur:curImp,
-      target:'&#8593; vs prev period',
-      status:impStatus,
-      disp:'<strong>'+curImp.toLocaleString()+'</strong>'+(prevImp>0?' <span style="font-size:11px;color:'+(impDiff>=0?'#1D9E75':'#e53e3e')+'">'+(impDiff>=0?'&#9650;':'&#9660;')+' '+Math.abs(impDiff).toLocaleString()+'</span>':''),
-      tip:tip([
-        ['What','Sum of all impressions logged for posts this period — total times team posts were seen on X.'],
-        ['Industry std','Absolute impressions depend on follower count and audience size. For small-account portfolios, period-over-period growth matters more than the raw number.'],
-        ['Our target','Trending up vs. the previous period. No flat number — the goal is consistent reach growth.'],
-        ['Good','&#8593; vs prev = reaching more people. Flat is OK short-term. &#8595; two periods in a row = investigate post timing, content angle, or account reach.']
-      ])
-    }
+    {label:'Total Actions',target:'&#8805; 120 / period',status:curActions>=120?'green':curActions>=80?'yellow':'red',disp:'<strong>'+curActions+'</strong>',
+     tip:tip([['What','Total posts + replies logged by the full team this bi-weekly period.'],['Industry std','X recommends 3–5 posts/day per account. 4 members × 3 actions/day × 14 days = 168 at full cadence.'],['Our target','≥120 actions/period (71% of full cadence). Accounts for weekends and realistic availability.'],['Good / Bad','≥120 = consistent cadence. 80–119 = acceptable with reason. <80 = significant gaps.']])},
+    {label:'Avg Engagement Rate',target:'&#8805; 10%',status:curER>=10?'green':curER>=5?'yellow':'red',disp:'<strong>'+curER.toFixed(1)+'%</strong>',
+     tip:tip([['What','Total engagements ÷ impressions × 100 across all logged posts this period.'],['Industry std','X/Twitter avg ER is 0.5–1%. B2B SaaS averages 1–3%. Only targeted niche strategies exceed 10%.'],['Our target','≥10% — reply-forward strategy in merchant/SaaS verticals. High-intent threads drive higher ER.'],['Good / Bad','≥10% = resonating. 5–9% = targeting needs work. <5% = wrong threads or too generic.']])},
+    {label:'Impressions',target:'&#8593; vs prev period',status:impStatus,disp:'<strong>'+curImp.toLocaleString()+'</strong>'+(prevImp>0?' <span style="font-size:11px;color:'+(impDiff>=0?'#1D9E75':'#e53e3e')+'">'+( impDiff>=0?'&#9650;':'&#9660;')+' '+Math.abs(impDiff).toLocaleString()+'</span>':'(no prev data)'),
+     tip:tip([['What','Sum of all impressions logged for posts this period — how many times team posts were seen on X.'],['Industry std','Absolute impressions depend on follower count. For small-account portfolios, growth trend matters more.'],['Our target','Period-over-period growth. No flat number — the goal is reaching more people each period.'],['Good / Bad','&#8593; vs prev = reaching more people. &#8595; two periods in a row = investigate timing, content, or reach.']])}
   ];
-  tbody.innerHTML=rows.map(function(row,i){
-    var sep=i>0?'border-top:1px solid #1e2235;':'';
-    return'<tr style="'+sep+'">' +
-      '<td style="padding:10px 10px;font-size:13px;font-weight:600;color:#e2e8f0">'+row.label+'</td>'+
+  tbody.innerHTML=rows.map(function(row,i){var sep=i>0?'border-top:1px solid #1e2235;':'';
+    return'<tr style="'+sep+'">'+
+      '<td style="padding:10px;font-size:13px;font-weight:600;color:#e2e8f0">'+row.label+'</td>'+
       '<td style="padding:10px;text-align:right;font-size:13px;color:#a78bfa">'+row.disp+'</td>'+
       '<td style="padding:10px;text-align:right;font-size:12px;color:#8b90b8">'+row.target+'</td>'+
       '<td style="padding:10px;text-align:center">'+badge(row.status)+'</td>'+
@@ -506,35 +464,32 @@ function renderActionItems(prevP,periods){
   var items=[];
   var activeM=MORDER.filter(function(x){return prevM.md[x];});
   var missingM=MORDER.filter(function(x){return !prevM.md[x];});
-  // Best ER member
   var bestER=activeM.reduce(function(b,x){return !b||prevM.md[x].er>prevM.md[b].er?x:b;},null);
   if(bestER){
-    items.push({icon:'&#11088;',text:'<strong>'+bestER+'</strong>: led last period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
+    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led last period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
   }
-  // Members with low original tweet count (< 5)
   activeM.forEach(function(x){
     var d=prevM.md[x];
     if(d&&d.posts<5){
-      items.push({icon:'&#128993;',text:'<strong>'+x+'</strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day this period'});
+      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day'});
     }
   });
-  // Missing members
   if(missingM.length){
-    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'</strong>: no activity logged last period — daily posting is critical for account growth'});
+    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no activity logged last period — daily posting is critical for account growth'});
   }
-  // Reply vs tweet ratio
   var totT=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].posts:0);},0);
   var totR=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].replies:0);},0);
   if(totR>totT){
     items.push({icon:'&#128172;',text:'Reply-forward strategy is strong ('+totR+' replies vs '+totT+' original tweets last period) — balance with more original content to build account authority'});
   }
-  // Brands with zero activity in prevP
   var BRANDS=['PaymentKit','SubDelete','SendScale'];
   var zeroBrands=BRANDS.filter(function(b){return !prevM.bd[b]||prevM.bd[b].imp===0;});
   if(zeroBrands.length){
-    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'</strong>: zero impressions last period — increase X Premium account activity'});
+    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: zero impressions last period — increase X Premium account activity'});
   }
-  // High impressions but low ER — reach is there but content isn't converting
+  items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
+  items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
+  // High impressions but low ER
   var avgImp=activeM.length>0?activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].imp:0);},0)/activeM.length:0;
   activeM.forEach(function(x){
     var d=prevM.md[x];
@@ -542,11 +497,7 @@ function renderActionItems(prevP,periods){
       items.push({icon:'&#128269;',text:'<strong>'+x+'</strong>: high reach ('+d.imp.toLocaleString()+' impressions) but low engagement ('+d.er.toFixed(1)+'% ER) — shift from standalone posts to replies in active niche threads, add questions to spark responses, and target more specific merchant/SaaS conversations'});
     }
   });
-  // Always include daily cadence
-  items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
-  // High-risk verticals
-  items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
-  listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'</li>';}).join('');
+  listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'<\/li>';}).join('');
 }
 function renderTrendSection(allPosts){
   var statsEl=document.getElementById('trendStats');
@@ -558,12 +509,14 @@ function renderTrendSection(allPosts){
   var d=new Date(anchor);
   function fmt(date){return date.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
   while(d<=now){
-    var fr=new Date(d);var to=new Date(d);
-    to.setDate(to.getDate()+13);to.setHours(23,59,59);
+    var fr=new Date(d);
+    var to=new Date(d);
+    to.setDate(to.getDate()+13);
+    to.setHours(23,59,59);
     var pp=filterByDate(allPosts,fr,to);
     if(pp.length>0){
       var pm=compute(pp);
-      tData.push({label:fmt(fr)+'–'+fmt(to),actions:pm.total,impressions:pm.totImp,er:parseFloat(pm.avgER.toFixed(1))});
+      tData.push({label:fmt(fr)+'–'+fmt(to),actions:pm.total,impressions:pm.totImp,er:parseFloat(pm.avgER.toFixed(1)),members:pm.activeMembers.length});
     }
     d.setDate(d.getDate()+14);
   }
@@ -573,11 +526,15 @@ function renderTrendSection(allPosts){
   var stats=[
     {label:'Total Actions',first:first.actions,last:last.actions,fmt:function(v){return v;}},
     {label:'Impressions',first:first.impressions,last:last.impressions,fmt:function(v){return v.toLocaleString();}},
-    {label:'Avg ER',first:first.er,last:last.er,suf:'%',fmt:function(v){return v.toFixed(1);}}
+    {label:'Avg ER',first:first.er,last:last.er,suf:'%',fmt:function(v){return v.toFixed(1);}},
+    
   ];
   statsEl.innerHTML=stats.map(function(s){
-    var p2=pct(s.first,s.last);var up=p2!==null&&parseFloat(p2)>=0;
-    var col=up?'#1D9E75':'#e53e3e';var arr=up?'&#9650;':'&#9660;';var suf=s.suf||'';
+    var p2=pct(s.first,s.last);
+    var up=p2!==null&&parseFloat(p2)>=0;
+    var col=up?'#1D9E75':'#e53e3e';
+    var arr=up?'&#9650;':'&#9660;';
+    var suf=s.suf||'';
     return '<div style="background:#0f1524;border-radius:8px;padding:12px;text-align:center">'+
       '<div style="font-size:11px;color:#8b90b8;margin-bottom:8px;font-weight:600">'+s.label+'</div>'+
       '<div style="font-size:10px;color:#8b90b8">First period</div>'+
@@ -591,13 +548,17 @@ function renderTrendSection(allPosts){
   var labels=tData.map(function(p){return p.label;});
   window._trendChart=new Chart(canvasEl,{
     type:'line',
-    data:{labels:labels,datasets:[
-      {label:'Total Actions',data:tData.map(function(p){return p.actions;}),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
-      {label:'Impressions',data:tData.map(function(p){return p.impressions;}),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
-      {label:'Avg ER %',data:tData.map(function(p){return p.er;}),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y2'}
-    ]},
+    data:{
+      labels:labels,
+      datasets:[
+        {label:'Total Actions',data:tData.map(function(p){return p.actions;}),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
+        {label:'Impressions',data:tData.map(function(p){return p.impressions;}),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y'},
+        {label:'Avg ER %',data:tData.map(function(p){return p.er;}),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',tension:0.3,fill:true,pointRadius:4,yAxisID:'y2'}
+      ]
+    },
     options:{
-      responsive:true,interaction:{mode:'index',intersect:false},
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{labels:{color:'#a0a8c0',font:{size:11},padding:16}},
         tooltip:{backgroundColor:'#1a2035',titleColor:'#e2e8f0',bodyColor:'#a0a8c0',padding:10}
@@ -610,7 +571,7 @@ function renderTrendSection(allPosts){
     }
   });
   var noteEl=document.getElementById('trendChartNote');
-  if(noteEl)noteEl.textContent=tData.length+' bi-weekly periods · Actions & Impressions on left axis · Avg ER % on right';
+  if(noteEl)noteEl.textContent=tData.length+' bi-weekly periods · Actions & Impressions on left axis · Avg ER % on right axis';
 }
 function renderFindings(m,periods){
   var el=document.getElementById('findingReply');
@@ -624,8 +585,8 @@ function renderFindings(m,periods){
     range=' logged '+fD2(periods.curFrom)+'–'+fD2(periods.curTo);
   }
   var txt=totR+' replies vs '+totP+' original posts'+range+'.';
-  if(best){txt+=' '+best+'’s '+m.md[best].replies+'-reply, '+m.md[best].posts+'-post mix is driving a '+m.md[best].er.toFixed(1)+'% ER — the highest on the team this period.';}
-  txt+=totR>totP?' Reply-forward strategy continues to outperform across all members.':' Original post volume is leading this period — strong content creation momentum.';
+  if(best){txt+=' '+best+'\u2019s '+m.md[best].replies+'-reply, '+m.md[best].posts+'-post mix is driving a '+m.md[best].er.toFixed(1)+'% ER \u2014 the highest on the team this period.';}
+  txt+=totR>totP?' Reply-forward strategy continues to outperform across all members.':' Original post volume is leading this period \u2014 strong content creation momentum.';
   el.textContent=txt;
 }
 async function loadData(){
@@ -687,4 +648,13 @@ function getPeriods(posts,mode,shift){
   var prevFrom=new Date(curFrom.getTime()-span*msDay);
   prevFrom.setHours(0,0,0,0);
   var prevTo=new Date(curFrom.getTime()-msDay);
-  prevTo.setHours(23,59,59,999
+  prevTo.setHours(23,59,59,999);
+  return {curFrom:curFrom,curTo:curTo,prevFrom:prevFrom,prevTo:prevTo};
+}
+function renderSummary(curP,prevP,periods,mode){var sb=document.getElementById('summaryBar');if(!sb)return;if(mode==='all'||mode==='custom'){sb.style.display='none';return;}sb.style.display='block';var label=mode==='bw'?'Bi-Weekly Summary':'Monthly Summary';sb.querySelector('span').textContent=label;var cur=computeBasic(curP);var prev=computeBasic(prevP);if(periods){document.getElementById('sumCurPeriod').textContent=fmtD(periods.curFrom)+' \u2013 '+fmtD(periods.curTo);document.getElementById('sumPrevPeriod').textContent=periods.prevFrom?(fmtD(periods.prevFrom)+' \u2013 '+fmtD(periods.prevTo)):'';}function bwTip(w,y,h){return '<div class="t-row"><span class="t-lbl">What</span>'+w+'</div><div class="t-row"><span class="t-lbl">Why it matters</span>'+y+'</div><div class="t-row"><span class="t-lbl">How computed</span>'+h+'</div>';}var cards=[{lbl:'TOTAL ACTIONS',val:cur.total,delta:dHtml(cur.total,prev.total,false),tip:bwTip('All posts and replies logged by the team this period.','Core activity metric — shows team engagement volume on X.','Count of all rows in the Google Sheet for the current period.')},{lbl:'IMPRESSIONS',val:cur.imp.toLocaleString(),delta:dHtml(cur.imp,prev.imp,false),tip:bwTip('Total impressions across all logged posts and replies.','Measures reach — how many times your content appeared in feeds.','Sum of the Impressions column for all logged actions.')},{lbl:'AVG ER',val:cur.er.toFixed(1)+'%',delta:dHtml(cur.er,prev.er,true),tip:bwTip('Average engagement rate across all logged actions.','Quality metric — 1-3% typical on X, 5%+ strong.','Total Engagements divided by Total Impressions x 100.')},{lbl:'TOP MEMBER',val:cur.topMem||'—',delta:cur.topER>0?'<span style="color:#8b90b8">'+cur.topER.toFixed(1)+'% ER</span>':'',tip:bwTip('Team member with the highest engagement rate this period.','Shows whose content strategy is working best.','Member with highest Engagements divided by Impressions across their logged posts.')},{lbl:'TOP BRAND — POSTS',val:cur.topB||'—',delta:cur.bM&&cur.bM[cur.topB]>0?'<span style="color:#8b90b8">'+cur.bM[cur.topB]+' posts</span>':'',tip:bwTip('Brand with the most posts and replies logged this period.','Shows which client account is getting the most activity volume.','Count of all rows grouped by brand for the current period.')},{lbl:'TOP BRAND — ER',val:cur.topBER||'—',delta:cur.topBERpct?'<span style="color:#4ade80">'+cur.topBERpct+' ER</span>':'',tip:bwTip('Brand with the highest engagement rate this period.','Shows which client account generates the best quality engagement per impression.','Brand ER = Total Engagements ÷ Total Impressions x 100 across all posts this period.')}];document.getElementById('summaryCards').innerHTML=cards.map(function(c){return '<div class="sum-card"><div style="font-size:10px;color:#8b90b8;letter-spacing:.05em;font-weight:600;display:flex;align-items:center;">'+c.lbl+(c.tip?'<span class="info-wrap" style="margin-left:4px;"><i class="info-btn">i</i><div class="info-tip">'+c.tip+'</div></span>':'')+'</div><div style="font-size:22px;font-weight:800;color:#e2e8f0;margin:4px 0">'+c.val+'</div><div style="font-size:12px">'+c.delta+'</div></div>';}).join('');}
+function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
+function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
+function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
+function applyFilter(){if(!_allPosts.length)return;var fv=document.getElementById('fromDate').value;var tv=document.getElementById('toDate').value;var curP,prevP=[],periods=null,mode=_curMode;if(fv||tv){var from=fv?new Date(fv+'T00:00:00'):null;var to=tv?new Date(tv+'T23:59:59'):null;curP=filterByDate(_allPosts,from,to);mode='custom';}else{periods=getPeriods(_allPosts,_curMode,_curShift);if(!periods)return;curP=filterByDate(_allPosts,periods.curFrom,periods.curTo);prevP=periods.prevFrom?filterByDate(_allPosts,periods.prevFrom,periods.prevTo):[];if(periods.curFrom)document.getElementById('fromDate').value=toYMD(periods.curFrom);if(periods.curTo)document.getElementById('toDate').value=toYMD(periods.curTo);}renderSummary(curP,prevP,periods,mode);var m=compute(curP);document.getElementById('stateBox').style.display='none';document.getElementById('dashboard').style.display='block';render(curP,[],m,periods,prevP);}
+</script></body>
+</html>
