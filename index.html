@@ -295,7 +295,7 @@ function render(posts,accounts,m,periods,prevP){
   renderERBars(m.md);renderTeamTable(m.md);renderTopPosts(m.top3,m.top3ByER);renderOpportunities(m);
   var prevM2=prevP&&prevP.length?compute(prevP):{md:{},bd:{},totImp:0,totEng:0,avgER:0,total:0,activeMembers:[]};
   renderTargetsTable(m,prevM2);
-  renderActionItems(prevP||[],periods);
+  renderActionItems(curP||[],periods);
   renderFindings(m,periods);
   renderTrendSection(_allPosts);
 }
@@ -458,7 +458,7 @@ function renderActionItems(prevP,periods){
   }
   var prevM=compute(prevP);
   var fD=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
-  if(periods&&periods.prevFrom&&subEl){
+  if(periods&&periods.curFrom&&subEl){
     subEl.textContent='Based on '+fD(periods.prevFrom)+' – '+fD(periods.prevTo)+' data';
   }
   var items=[];
@@ -466,26 +466,26 @@ function renderActionItems(prevP,periods){
   var missingM=MORDER.filter(function(x){return !prevM.md[x];});
   var bestER=activeM.reduce(function(b,x){return !b||prevM.md[x].er>prevM.md[b].er?x:b;},null);
   if(bestER){
-    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led last period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
+    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led this period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
   }
   activeM.forEach(function(x){
     var d=prevM.md[x];
     if(d&&d.posts<5){
-      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies last period — aim for at least 1 original post per day'});
+      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies this period — aim for at least 1 original post per day'});
     }
   });
   if(missingM.length){
-    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no activity logged last period — daily posting is critical for account growth'});
+    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no activity logged this period — daily posting is critical for account growth'});
   }
   var totT=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].posts:0);},0);
   var totR=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].replies:0);},0);
   if(totR>totT){
-    items.push({icon:'&#128172;',text:'Reply-forward strategy is strong ('+totR+' replies vs '+totT+' original tweets last period) — balance with more original content to build account authority'});
+    items.push({icon:'&#128172;',text:'Reply-forward strategy is strong ('+totR+' replies vs '+totT+' original tweets this period) — balance with more original content to build account authority'});
   }
   var BRANDS=['PaymentKit','SubDelete','SendScale'];
   var zeroBrands=BRANDS.filter(function(b){return !prevM.bd[b]||prevM.bd[b].imp===0;});
   if(zeroBrands.length){
-    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: zero impressions last period — increase X Premium account activity'});
+    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: zero impressions this period — increase X Premium account activity'});
   }
   items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
   items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
