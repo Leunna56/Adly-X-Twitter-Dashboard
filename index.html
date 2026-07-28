@@ -468,35 +468,35 @@ function renderActionItems(prevP,periods){
   var missingM=MORDER.filter(function(x){return !prevM.md[x];});
   var bestER=activeM.reduce(function(b,x){return !b||prevM.md[x].er>prevM.md[b].er?x:b;},null);
   if(bestER){
-    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led this period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — keep this momentum'});
+    items.push({icon:'&#11088;',text:'<strong>'+bestER+'<\/strong>: led this period with '+prevM.md[bestER].er.toFixed(1)+'% ER and '+prevM.md[bestER].total+' total actions — team, mirror their reply-in-thread approach'});
   }
   activeM.forEach(function(x){
     var d=prevM.md[x];
     if(d&&d.posts<5){
-      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies this period — aim for at least 1 original post per day'});
+      items.push({icon:'&#128993;',text:'<strong>'+x+'<\/strong>: only '+d.posts+' original tweet'+(d.posts===1?'':'s')+' vs '+d.replies+' replies this period — post 1 original tweet today targeting payment-distressed founders'});
     }
   });
   if(missingM.length){
-    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no activity logged this period — daily posting is critical for account growth'});
+    items.push({icon:'&#128308;',text:'<strong>'+missingM.join(', ')+'<\/strong>: no posts this period — post + reply to 2 payment hold threads today'});
   }
   var totT=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].posts:0);},0);
   var totR=activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].replies:0);},0);
   if(totR>totT){
-    items.push({icon:'&#128172;',text:'Reply-forward strategy is strong ('+totR+' replies vs '+totT+' original tweets this period) — balance with more original content to build account authority'});
+    items.push({icon:'&#128172;',text:'Content gap: '+totR+' replies vs '+totT+' original posts — target 1 original tweet per active account per day'});
   }
   var BRANDS=['PaymentKit','SubDelete','SendScale'];
   var zeroBrands=BRANDS.filter(function(b){return !prevM.bd[b]||prevM.bd[b].imp===0;});
   if(zeroBrands.length){
-    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: zero impressions this period — increase X Premium account activity'});
+    items.push({icon:'&#128202;',text:'<strong>'+zeroBrands.join(', ')+'<\/strong>: 0 impressions — verify Premium is active and post today'});
   }
   items.push({icon:'&#128197;',text:'All: maintain daily cadence — 8–9am original post, 12–1pm reply block, 4–6pm second sweep'});
-  items.push({icon:'&#128994;',text:'Prioritize high-risk merchant verticals — nutra, telehealth, iGaming, crypto founders on X'});
+  items.push({icon:'&#128994;',text:'Search today: "Stripe frozen" "PayPal hold" "Shopify reserve" — reply to 3 active threads in nutra, telehealth, or iGaming'});
   // High impressions but low ER
   var avgImp=activeM.length>0?activeM.reduce(function(s,x){return s+(prevM.md[x]?prevM.md[x].imp:0);},0)/activeM.length:0;
   activeM.forEach(function(x){
     var d=prevM.md[x];
     if(d&&d.imp>Math.max(avgImp,500)&&d.er<7){
-      items.push({icon:'&#128269;',text:'<strong>'+x+'</strong>: high reach ('+d.imp.toLocaleString()+' impressions) but low engagement ('+d.er.toFixed(1)+'% ER) — shift from standalone posts to replies in active niche threads, add questions to spark responses, and target more specific merchant/SaaS conversations'});
+      items.push({icon:'&#128269;',text:'<strong>'+x+'</strong>: high reach ('+d.imp.toLocaleString()+' impressions) but low engagement ('+d.er.toFixed(1)+'% ER) — reply under active payment threads and ask a question to prompt engagement'});
     }
   });
   listEl.innerHTML=items.map(function(x){return'<li data-icon="'+x.icon+'">'+x.text+'<\/li>';}).join('');
