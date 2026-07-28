@@ -255,8 +255,8 @@ function compute(posts){
   const totEng=posts.reduce((s,p)=>s+n(p['Engagements']),0);
   const avgER=totImp>0?totEng/totImp*100:0;
   const _mp=[...posts].map(p=>{const i=n(p['Impressions']),e=n(p['Engagements']);return{...p,_imp:i,_eng:e,_er:i>0?e/i*100:0,_handle:extractHandle(p['Post Link'])};});
-  const top3=[..._mp].filter(p=>p._eng>0).sort((a,b)=>b._eng-a._eng).slice(0,3);
-  const top3ByER=[..._mp].filter(p=>p._imp>=10).sort((a,b)=>b._er-a._er).slice(0,3);
+  const _mpSeen=new Set();const _mpU=_mp.filter(p=>{const k=(p['Post Link']||p['Post id']||'').trim();if(!k||_mpSeen.has(k))return false;_mpSeen.add(k);return true;});const top3=[..._mpU].filter(p=>p._eng>0).sort((a,b)=>b._eng-a._eng).slice(0,3);
+  const top3ByER=[..._mpU].filter(p=>p._imp>=10).sort((a,b)=>b._er-a._er).slice(0,3);
   return{md,bd,totImp,totEng,avgER,activePremium,top3,top3ByER,total:posts.length,activeMembers:MORDER.filter(m=>md[m])};
 }
 </script><script>
@@ -417,7 +417,7 @@ function renderOpportunities(){
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
-function renderTargetsTable(m,prevM){
+function renderTargetsTable(m,prevM){var _numPrem=m.activePremium?m.activePremium.size:6;var _actTgt=_numPrem*3*14;var _actWrn=Math.round(_actTgt*0.67);
   var tbody=document.getElementById('targetsTbody');
   if(!tbody)return;
   function badge(s){var map={green:{icon:'&#128994;',label:'On Target',col:'#1D9E75'},yellow:{icon:'&#128993;',label:'Near Target',col:'#d69e2e'},red:{icon:'&#128308;',label:'Below Target',col:'#e53e3e'}};var x=map[s]||map.red;return'<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:'+x.col+'">'+x.icon+' '+x.label+'</span>';}
@@ -432,7 +432,7 @@ function renderTargetsTable(m,prevM){
   var impDiff=prevImp>0?curImp-prevImp:0;
   var impStatus=prevImp===0?'green':curImp>=prevImp?'green':curImp>=prevImp*0.9?'yellow':'red';
   var rows=[
-    {label:'Total Actions',target:'&#8805; 120 / period',status:curActions>=120?'green':curActions>=80?'yellow':'red',disp:'<strong>'+curActions+'</strong>',
+    {label:'Total Actions',target:'&#8805; '+_actTgt+' / period ('+_numPrem+' accounts × 3/day × 14d)',status:curActions>=_actTgt?'green':curActions>=_actWrn?'yellow':'red',disp:'<strong>'+curActions+'</strong>',
      tip:tip([['What','Total posts + replies logged by the full team this bi-weekly period.'],['Industry std','X recommends 3–5 posts/day per account. 4 members × 3 actions/day × 14 days = 168 at full cadence.'],['Our target','≥120 actions/period (71% of full cadence). Accounts for weekends and realistic availability.'],['Good / Bad','≥120 = consistent cadence. 80–119 = acceptable with reason. <80 = significant gaps.']])},
     {label:'Avg Engagement Rate',target:'&#8805; 10%',status:curER>=10?'green':curER>=5?'yellow':'red',disp:'<strong>'+curER.toFixed(1)+'%</strong>',
      tip:tip([['What','Total engagements ÷ impressions × 100 across all logged posts this period.'],['Industry std','X/Twitter avg ER is 0.5–1%. B2B SaaS averages 1–3%. Only targeted niche strategies exceed 10%.'],['Our target','≥10% — reply-forward strategy in merchant/SaaS verticals. High-intent threads drive higher ER.'],['Good / Bad','≥10% = resonating. 5–9% = targeting needs work. <5% = wrong threads or too generic.']])},
@@ -460,8 +460,8 @@ function renderActionItems(prevP,periods){
   }
   var prevM=compute(prevP);
   var fD=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
-  if(periods&&periods.curFrom&&subEl){
-    subEl.textContent='Based on '+fD(periods.prevFrom)+' – '+fD(periods.prevTo)+' data';
+  if(periods&&periods.prevFrom&&subEl){
+    subEl.textContent='Based on '+fD(periods.curFrom)+' – '+fD(periods.curTo)+' data';
   }
   var items=[];
   var activeM=MORDER.filter(function(x){return prevM.md[x];});
