@@ -417,7 +417,7 @@ function renderOpportunities(){
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
-function renderTargetsTable(m,prevM){var _numPrem=m.activePremium?m.activePremium.size:6;var _actTgt=_numPrem*3*14;var _actWrn=Math.round(_actTgt*0.67);
+function renderTargetsTable(m,prevM){var _numPrem=6;var _actTgt=_numPrem*3*14;var _actWrn=Math.round(_actTgt*0.67);
   var tbody=document.getElementById('targetsTbody');
   if(!tbody)return;
   function badge(s){var map={green:{icon:'&#128994;',label:'On Target',col:'#1D9E75'},yellow:{icon:'&#128993;',label:'Near Target',col:'#d69e2e'},red:{icon:'&#128308;',label:'Below Target',col:'#e53e3e'}};var x=map[s]||map.red;return'<span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:'+x.col+'">'+x.icon+' '+x.label+'</span>';}
