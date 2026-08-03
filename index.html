@@ -198,7 +198,7 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
 <footer>Adly X/Twitter Team Dashboard &middot; Live Data &middot; <span id="footerDate"></span></footer>
 <script>
 const SHEET_ID='1cCHnQ9QgMY0smRaLlg_lyGJ6k18EojXJ0PrFgC3FWDg';
-const CSV_URL='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&sheet=X_Weekly_Analytics_Log';
+const CSV_URL='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid=0';
 const MC={Olibher:'#7F77DD',Jes:'#1D9E75',Jen:'#BA7517',Leah:'#378ADD'};
 const BC={PaymentKit:'#378ADD',SubDelete:'#D85A30',SendScale:'#1D9E75'};
 const MORDER=['Olibher','Jes','Jen','Leah'];
@@ -628,7 +628,6 @@ function renderFindings(m,periods){
   txt+=totR>totP?' Reply-forward strategy continues to outperform across all members.':' Original post volume is leading this period — strong content creation momentum.';
   el.textContent=txt;
 }
-const CSV_URL='https://docs.google.com/spreadsheets/d/1cCHnQ9QgMY0smRaLlg_lyGJ6k18EojXJ0PrFgC3FWDg/export?format=csv&gid=0';
 async function loadData(){
   var btn=document.getElementById('refreshBtn');
   var icon=document.getElementById('spinIcon');
