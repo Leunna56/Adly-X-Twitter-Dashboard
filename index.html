@@ -309,8 +309,7 @@ function render(posts,accounts,m,periods,prevP){
   document.getElementById('lastUpdated').textContent='Updated '+now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
   document.getElementById('liveDate').textContent='Live · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('footerDate').textContent=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  if(!m.md['Leah']){document.getElementById('alertBanner').style.display='flex';document.getElementById('alertText').textContent="Leah's @lestrada_8_3 posts are not yet logged.";}
-  else document.getElementById('alertBanner').style.display='none';
+  document.getElementById('alertBanner').style.display='none';
   // ── Charts use current period data (m) ────────────────────────────────────
   renderAccounts(posts);
   renderImpChart(m.md);renderBrandChart(m.bd);renderTypeChart(m.md);
@@ -412,7 +411,7 @@ function renderOpportunities(m){
     {icon:'&#128200;',html:'<strong>'+(totR>totP?'Replies outperform original posts':'Original posts leading this period')+'</strong> - '+totR+' replies vs '+totP+' posts.'},
     best?{icon:'&#11088;',html:'<strong>'+best+' leads with '+m.md[best].er.toFixed(1)+'% ER</strong> - '+m.md[best].total+' total actions logged.'}:null,
     {icon:'&#128202;',html:'<strong>Jen and Jes logging strong volume</strong> - increasing Olibher original posts is low-risk.'},
-    !m.md['Leah']?{icon:'&#128683;',html:'<strong>SendScale has zero data</strong> - no insights until Leah logs @lestrada_8_3 posts.'}:null
+    null
   ].filter(Boolean);
   document.getElementById('opportunities').innerHTML=items.map(function(x){return '<li data-icon="'+x.icon+'">'+x.html+'</li>';}).join('');
 }
