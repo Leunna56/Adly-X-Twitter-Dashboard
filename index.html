@@ -677,7 +677,7 @@ function getPeriods(posts,mode,shift){
   if(!maxTs){return {curFrom:null,curTo:null,prevFrom:null,prevTo:null};}
   var anchor=new Date(2026,4,18);
   anchor.setHours(0,0,0,0);
-  var daysSinceAnchor=Math.floor((maxTs-anchor.getTime())/msDay);
+  var today=new Date();today.setHours(0,0,0,0);var daysSinceAnchor=Math.floor((Math.max(maxTs,today.getTime())-anchor.getTime())/msDay);
   var periodIdx=Math.floor(daysSinceAnchor/span)-shift;
   var curFrom=new Date(anchor.getTime()+periodIdx*span*msDay);
   curFrom.setHours(0,0,0,0);
