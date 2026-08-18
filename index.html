@@ -281,12 +281,12 @@ function render(posts,accounts,m,periods,prevP){
   mdG=m.md;
   // ── Top KPIs always use ALL TIME data (_allPosts) ──────────────────────────
   var mAll=compute(_allPosts);
-  document.getElementById('kpiActions').textContent=mAll.total;document.getElementById('kpiActionsSub').textContent=mAll.totalPosts+' posts · '+mAll.totalReplies+' replies';
+  document.getElementById('kpiActions').textContent=mAll.total;document.getElementById('kpiActionsSub').textContent=mAll.totalPosts+' posts \u00b7 '+mAll.totalReplies+' replies';
   document.getElementById('kpiImpressions').textContent=mAll.totImp.toLocaleString();
   document.getElementById('kpiER').textContent=mAll.avgER.toFixed(1)+'%';
   var allActive=mAll.activeMembers;
   document.getElementById('kpiMembers').textContent=allActive.length+' / 4';
-  document.getElementById('kpiMemberSub').textContent=allActive.join(' · ');
+  document.getElementById('kpiMemberSub').textContent=allActive.join(' \u00b7 ');
   // All-time brand KPIs
   var _bM={},_bEng={},_bImp={};
   _allPosts.forEach(function(p){var b=normBrand(p['Brand']||'')||p['Brand']||'';if(b){_bM[b]=(_bM[b]||0)+1;_bEng[b]=(_bEng[b]||0)+(parseFloat(p['Engagements'])||0);_bImp[b]=(_bImp[b]||0)+(parseFloat(p['Impressions'])||0);}});
@@ -303,11 +303,11 @@ function render(posts,accounts,m,periods,prevP){
   var allDates=_allPosts.map(function(p){return new Date(p['Date']);}).filter(function(d){return !isNaN(d.getTime());}).sort(function(a,b){return a-b;});
   var fmtD=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
   if(allDates.length){
-    document.getElementById('periodMeta').textContent='Data: '+fmtD(allDates[0])+' – '+fmtD(allDates[allDates.length-1])+' · '+_allPosts.length+' total entries';
+    document.getElementById('periodMeta').textContent='Data: '+fmtD(allDates[0])+' – '+fmtD(allDates[allDates.length-1])+' \u00b7 '+_allPosts.length+' total entries';
   }
   var now=new Date();
   document.getElementById('lastUpdated').textContent='Updated '+now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-  document.getElementById('liveDate').textContent='Live · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('liveDate').textContent='Live \u00b7 '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('footerDate').textContent=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   document.getElementById('alertBanner').style.display='none';
   // ── Charts use current period data (m) ────────────────────────────────────
@@ -396,7 +396,7 @@ function renderTopPosts(byEng,byER){
     var txt=(p['Post text']||'');
     var preview=txt.length>65?txt.slice(0,62)+'...':txt;
     var brand=normBrand(p['Brand'])||p['Brand'];
-    var sub=mode==='eng'?(p._eng+' engagements'):(p._imp+' impressions · '+p._er.toFixed(1)+'% ER');
+    var sub=mode==='eng'?(p._eng+' engagements'):(p._imp+' impressions \u00b7 '+p._er.toFixed(1)+'% ER');
     return '<div class="top-post"><div style="font-size:11px;color:#8b90b8">'+(i+1)+'. '+p._handle+' - '+brand+'</div><div style="font-weight:500;margin:2px 0;">'+preview+'</div><div style="font-size:10px;color:#8b90b8;margin-top:4px">'+sub+'</div></div>';
   }
   document.getElementById('topPostsByEng').innerHTML=byEng.length?byEng.map(function(p,i){return mkItem(p,i,'eng');}).join(''):'<p style="color:#8b90b8;font-size:12px;">No data</p>';
@@ -442,7 +442,7 @@ function renderTargetsTable(m,prevM){
       cur:curActions,
       target:'&#8805; 120 / period',
       status:curActions>=120?'green':curActions>=80?'yellow':'red',
-      disp:'<strong>'+curActions+'</strong><br><small style="font-weight:400;font-size:10px;color:var(--muted)">'+m.totalPosts+' posts · '+m.totalReplies+' replies</small>',
+      disp:'<strong>'+curActions+'</strong><br><small style="font-weight:400;font-size:10px;color:var(--muted)">'+m.totalPosts+' posts \u00b7 '+m.totalReplies+' replies</small>',
       tip:tip([
         ['What','Total posts + replies logged by the full team this bi-weekly period.'],
         ['Industry std','X recommends 3–5 posts/day per account. At 4 members × 3 actions/day × 14 days = 168 actions at full cadence.'],
@@ -610,7 +610,7 @@ function renderTrendSection(allPosts){
     }
   });
   var noteEl=document.getElementById('trendChartNote');
-  if(noteEl)noteEl.textContent=tData.length+' bi-weekly periods · Actions & Impressions on left axis · Avg ER % on right';
+  if(noteEl)noteEl.textContent=tData.length+' bi-weekly periods \u00b7 Actions & Impressions on left axis \u00b7 Avg ER % on right';
 }
 function renderFindings(m,periods){
   var el=document.getElementById('findingReply');
