@@ -99,7 +99,7 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     <!-- ═══ ALL TIME OVERVIEW ═══ -->
     <div class="section-header">&#128202; All Time Overview</div>
     <div class="kpi-grid">
-      <div class="kpi-card blue"><div class="kpi-label">Total Actions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All posts and replies ever logged by the team.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Core activity metric — shows total team output since tracking began.</div><div class="t-row"><span class="t-lbl">How computed</span>Total row count in the Google Sheet across all dates.</div></div></span></div><div class="kpi-value" id="kpiActions">—</div><div class="kpi-sub">posts + replies logged</div></div>
+      <div class="kpi-card blue"><div class="kpi-label">Total Actions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All posts and replies ever logged by the team.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Core activity metric — shows total team output since tracking began.</div><div class="t-row"><span class="t-lbl">How computed</span>Total row count in the Google Sheet across all dates.</div></div></span></div><div class="kpi-value" id="kpiActions">—</div><div class="kpi-sub" id="kpiActionsSub">posts + replies logged</div></div>
       <div class="kpi-card purple"><div class="kpi-label">Total Impressions — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Sum of all impressions across every logged post and reply.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Measures total reach achieved since tracking began.</div><div class="t-row"><span class="t-lbl">How computed</span>Sum of the Impressions column for all logged actions.</div></div></span></div><div class="kpi-value" id="kpiImpressions">—</div><div class="kpi-sub">across all logged posts</div></div>
       <div class="kpi-card green"><div class="kpi-label">Avg ER — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Average engagement rate across all logged actions ever.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Quality baseline — 1-3% typical on X, 5%+ strong.</div><div class="t-row"><span class="t-lbl">How computed</span>Total Engagements ÷ Total Impressions × 100, all time.</div></div></span></div><div class="kpi-value" id="kpiER">—</div><div class="kpi-sub">engagements ÷ impressions</div></div>
       <div class="kpi-card amber"><div class="kpi-label">Active Members — All Time<span class="info-wrap"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>Team members who have logged at least one action ever.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Tracks total team participation since launch.</div><div class="t-row"><span class="t-lbl">How computed</span>Count of distinct agent names across all logged actions.</div></div></span></div><div class="kpi-value" id="kpiMembers">—</div><div class="kpi-sub" id="kpiMemberSub"></div></div>
@@ -273,7 +273,7 @@ function compute(posts){
   const _mp=[...posts].map(p=>{const i=n(p['Impressions']),e=n(p['Engagements']);return{...p,_imp:i,_eng:e,_er:i>0?e/i*100:0,_handle:extractHandle(p['Post Link'])};});
   const top3=[..._mp].filter(p=>p._eng>0).sort((a,b)=>b._eng-a._eng).slice(0,3);
   const top3ByER=[..._mp].filter(p=>p._imp>=10).sort((a,b)=>b._er-a._er).slice(0,3);
-  return{md,bd,totImp,totEng,avgER,activePremium,top3,top3ByER,total:posts.length,activeMembers:MORDER.filter(m=>md[m])};
+  const totPosts=posts.filter(p=>(p['Post / Reply']||'').trim()==='Post').length;const totReplies=posts.length-totPosts;return{md,bd,totImp,totEng,avgER,activePremium,top3,top3ByER,total:posts.length,totalPosts:totPosts,totalReplies:totReplies,activeMembers:MORDER.filter(m=>md[m])};
 }
 </script><script>
 let mdG={};
@@ -281,7 +281,7 @@ function render(posts,accounts,m,periods,prevP){
   mdG=m.md;
   // ── Top KPIs always use ALL TIME data (_allPosts) ──────────────────────────
   var mAll=compute(_allPosts);
-  document.getElementById('kpiActions').textContent=mAll.total;
+  document.getElementById('kpiActions').textContent=mAll.total;document.getElementById('kpiActionsSub').textContent=mAll.totalPosts+' posts · '+mAll.totalReplies+' replies';
   document.getElementById('kpiImpressions').textContent=mAll.totImp.toLocaleString();
   document.getElementById('kpiER').textContent=mAll.avgER.toFixed(1)+'%';
   var allActive=mAll.activeMembers;
@@ -442,7 +442,7 @@ function renderTargetsTable(m,prevM){
       cur:curActions,
       target:'&#8805; 120 / period',
       status:curActions>=120?'green':curActions>=80?'yellow':'red',
-      disp:'<strong>'+curActions+'</strong>',
+      disp:'<strong>'+curActions+'</strong><br><small style="font-weight:400;font-size:10px;color:var(--muted)">'+m.totalPosts+' posts · '+m.totalReplies+' replies</small>',
       tip:tip([
         ['What','Total posts + replies logged by the full team this bi-weekly period.'],
         ['Industry std','X recommends 3–5 posts/day per account. At 4 members × 3 actions/day × 14 days = 168 actions at full cadence.'],
