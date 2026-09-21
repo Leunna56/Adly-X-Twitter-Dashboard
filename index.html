@@ -242,7 +242,7 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     <!-- ═══ TRIAGE FAILED ═══ -->
     <div class="section-header" style="margin-top:18px">&#9888;&#65039; Triage — No-Fit Leads</div>
     <div class="kpi-grid" style="margin-bottom:13px">
-      <div class="kpi-card red" style="border-left:3px solid var(--red)"><div class="kpi-label">Total Triaged Out</div><div class="kpi-value" style="color:var(--red)">135</div><div class="kpi-sub">screened &amp; rejected</div></div>
+      <div class="kpi-card red" style="border-left:3px solid var(--red)"><div class="kpi-label">Total Triaged Out</div><div class="kpi-value" style="color:var(--red)" id="triage-total-val">135</div><div class="kpi-sub">screened &amp; rejected</div></div>
       <div class="kpi-card" style="border-left:3px solid var(--blue)"><div class="kpi-label">Qualified (Pass Rate)</div><div class="kpi-value" style="color:var(--blue)">83</div><div class="kpi-sub">38% of total reviewed</div></div>
       <div class="kpi-card" style="border-left:3px solid var(--amber)"><div class="kpi-label">Top Reject Reason</div><div class="kpi-value" style="color:var(--amber);font-size:14px;line-height:1.3">Not Merchant ICP</div><div class="kpi-sub">most common disqualifier</div></div>
       <div class="kpi-card" style="border-left:3px solid var(--muted)"><div class="kpi-label">X vs Other Platforms</div><div class="kpi-value" style="color:var(--muted)">133</div><div class="kpi-sub">X-only (99% of triage)</div></div>
@@ -347,6 +347,7 @@ function normAgent(a){
   if(!a)return null;const l=a.trim().toLowerCase();
   if(l==='jen')return'Jen';if(l==='jes'||l==='jess')return'Jes';
   if(l==='olibher')return'Olibher';if(l==='leah'||l==='leigh')return'Leah';
+  if(l==='roy')return'Roy';
   return null;
 }
 function normBrand(b){
@@ -430,7 +431,7 @@ function render(posts,accounts,m,periods,prevP){
 }
 
 function renderAccounts(posts){
-  var ACCTS={PaymentKit:[{h:'C37484Olibher'},{h:'COlibher'},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'},{h:'MerchantRiskDsk'},{h:'ParrishL0rie'},{h:'Ronaldp38dy'},{h:'SuzieLeeu95k'},{h:'SuzannelnBf57'},{h:'SeriLee55'},{h:'AlexTamano'}],SubDelete:[{h:'buildwithpurple'},{h:'CalebSmith8oea1'},{h:'SuzieLeev'},{h:'JenAbance'}],SendScale:[{h:'lestrada_8_3'},{h:'SuzieLeeu95k',premium:true}]};
+  var ACCTS={PaymentKit:[{h:'C37484Olibher',premium:true},{h:'COlibher',premium:true},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'},{h:'MerchantRiskDsk',premium:true},{h:'ParrishL0rie'},{h:'Ronaldp38dy',premium:true},{h:'SuzieLeeu95k'},{h:'SuzannelnBf57'},{h:'SeriLee55'},{h:'AlexTamano',premium:true}],SubDelete:[{h:'buildwithpurple'},{h:'CalebSmith8oea1'},{h:'SuzieLeevj',premium:true},{h:'JenAbance'}],SendScale:[{h:'lestrada_8_3'},{h:'SuzieLeeu95k'}]};
   var activeH=new Set(posts.map(function(p){var lnk=p['Post Link']||'';var m=lnk.match(/x\.com\/([^\/]+)\//);return m?m[1].toLowerCase():'';}).filter(Boolean));
   var totalA=0,premA=0;
   Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(activeH.has(a.h.toLowerCase()))premA++;});});
@@ -825,7 +826,7 @@ function renderSummary(curP,prevP,periods,mode){
   ];
   document.getElementById('summaryCards').innerHTML=cards.map(function(c){return '<div class="sum-card"><div style="font-size:10px;color:#8b90b8;letter-spacing:.05em;font-weight:600;display:flex;align-items:center;">'+c.lbl+(c.tip?'<span class="info-wrap" style="margin-left:4px;"><i class="info-btn">i</i><div class="info-tip">'+c.tip+'</div></span>':'')+'</div><div style="font-size:22px;font-weight:800;color:#e2e8f0;margin:4px 0">'+c.val+'</div>'+(c.sub?'<div style="font-size:10px;color:#8b90b8;margin-top:2px">'+c.sub+'</div>':'')+'<div style="font-size:12px">'+c.delta+'</div></div>';}).join('');
 }
-function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});document.getElementById('fromDate').value='';doc5ment.getElementById('toDate').value='';applyFilter();}
+function setPeriod(mode){_curMode=mode;_curShift=0;document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p===mode);});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
 function shiftPeriod(dir){_curShift=Math.max(0,_curShift+dir);document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
 function resetPeriod(){_curShift=0;_curMode='bw';document.querySelectorAll('.pb').forEach(function(b){b.classList.toggle('active',b.dataset.p==='bw');});document.getElementById('fromDate').value='';document.getElementById('toDate').value='';applyFilter();}
 
@@ -8142,7 +8143,9 @@ function renderPKSection(curFrom, curTo) {
 
   // Update KPIs
   document.getElementById('pk-total').textContent = total;
-  document.getElementById('pk-total-sub').textContent = total > 0 ? 'of 83 all-time ('+(Math.round(total/83*100))+'%)' : 'No leads this period';
+  var qualified = filtered.filter(function(l){return l.source==='LT';}).length;
+  var triageFailed = filtered.filter(function(l){return l.source==='TF';}).length;
+  document.getElementById('pk-total-sub').textContent = total > 0 ? (qualified + ' qualified · ' + triageFailed + ' triage failed') : 'No leads this period';
   document.getElementById('pk-dms').textContent = dms;
   document.getElementById('pk-dms-sub').textContent = dms > 0 ? Math.round(dms/total*100)+'% contact rate' : '—';
   document.getElementById('pk-responses').textContent = responses;
@@ -8194,6 +8197,9 @@ function renderPKSection(curFrom, curTo) {
     return '<span style="color:'+(colors[p[0]]||'var(--text)')+'">'+p[0]+' <strong>'+p[1]+'</strong></span>';
   }).join('');
   document.getElementById('pk-platforms').innerHTML = platHtml || '<span style="color:var(--muted)">—</span>';
+  // Update triage section
+  var triageEl = document.getElementById('triage-total-val');
+  if(triageEl) triageEl.textContent = triageFailed;
 }
 
 function applyFilter(){
