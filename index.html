@@ -825,7 +825,7 @@ function renderPKSection(curFrom, curTo) {
   var triageFailed = filtered.filter(function(l){return l.source==='TF';}).length;
   document.getElementById('pk-total-sub').textContent = total > 0 ? (qualified + ' qualified · ' + triageFailed + ' triage failed') : 'No leads this period';
   document.getElementById('pk-dms').textContent = dms;
-  document.getElementById('pk-dms-sub').textContent = dms > 0 ? Math.round(dms/total*100)+'% contact rate' : '—';
+  document.getElementById('pk-dms-sub').textContent = dms > 0 ? Math.round(dms/Math.max(qualified,1)*100)+'% of qualified' : '—';
   document.getElementById('pk-responses').textContent = responses;
   document.getElementById('pk-responses-sub').textContent = dms > 0 ? Math.round(responses/dms*100)+'% response rate' : '—';
   document.getElementById('pk-nate').textContent = nate;
