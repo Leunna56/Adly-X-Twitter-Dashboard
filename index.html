@@ -344,7 +344,7 @@ function render(posts,accounts,m,periods,prevP){
   document.getElementById('kpiImpressions').textContent=mAll.totImp.toLocaleString();
   document.getElementById('kpiER').textContent=mAll.avgER.toFixed(1)+'%';
   var allActive=mAll.activeMembers;
-  document.getElementById('kpiMembers').textContent=allActive.length+' / 4';
+  document.getElementById('kpiMembers').textContent=allActive.length+' / 5';
   document.getElementById('kpiMemberSub').textContent=allActive.join(' \u00b7 ');
   // All-time brand KPIs
   var _bM={},_bEng={},_bImp={};
