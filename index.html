@@ -825,7 +825,7 @@ function renderPKSection(curFrom, curTo) {
   var triageFailed = filtered.filter(function(l){return l.source==='TF';}).length;
   document.getElementById('pk-total-sub').textContent = total > 0 ? (qualified + ' qualified · ' + triageFailed + ' triage failed') : 'No leads this period';
   document.getElementById('pk-dms').textContent = dms;
-  document.getElementById('pk-dms-sub').textContent = dms > 0 ? Math.round(dms/Math.max(qualified,1)*100)+'% of qualified' : '—';
+  document.getElementById('pk-dms-sub').textContent = dms > 0 ? Math.round(dms/Math.max(qualified,1)*100)+'% contact rate' : '—';
   document.getElementById('pk-responses').textContent = responses;
   document.getElementById('pk-responses-sub').textContent = dms > 0 ? Math.round(responses/dms*100)+'% response rate' : '—';
   document.getElementById('pk-nate').textContent = nate; var _nb=filtered.reduce(function(s,l){return s+(l.nateBox||0);},0), _nc=filtered.reduce(function(s,l){return s+(l.toChannel||0);},0); var _bdEl=document.getElementById('pk-nate-bd'); if(_bdEl) _bdEl.textContent = nate>0 ? '('+_nb+' checkbox + '+_nc+' channel)' : '';
@@ -901,7 +901,7 @@ function renderPKAllTime(){
   var inner='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 0 8px;padding-left:2px">&#128198; All Time Overview &nbsp;·&nbsp; '+dr+'</div>'
     +'<div class="kpi-grid" style="margin-bottom:13px">'
     +'<div class="kpi-card blue"><div class="kpi-label">Total Leads Found</div><div class="kpi-value" style="color:var(--blue)">'+allN+'</div><div class="kpi-sub">'+total+' qualified \u00b7 '+tfN+' triage failed</div></div>'
-    +'<div class="kpi-card"><div class="kpi-label">DMs Sent</div><div class="kpi-value" style="color:var(--green)">'+dms+'</div><div class="kpi-sub">'+Math.round(dms/total*100)+'% of qualified</div></div>'
+    +'<div class="kpi-card"><div class="kpi-label">DMs Sent</div><div class="kpi-value" style="color:var(--green)">'+dms+'</div><div class="kpi-sub">'+Math.round(dms/total*100)+'% contact rate</div></div>'
     +'<div class="kpi-card"><div class="kpi-label">DM Responses</div><div class="kpi-value" style="color:var(--amber)">'+resp+'</div><div class="kpi-sub">'+(dms>0?Math.round(resp/dms*100):0)+'% response rate</div></div>'
     +'<div class="kpi-card"><div class="kpi-label">Sent to Nate<span style="font-size:10px;font-weight:400;opacity:.7;margin-left:6px;text-transform:none;letter-spacing:0">('+lt.reduce(function(s,l){return s+(l.nateBox||0);},0)+' checkbox + '+lt.reduce(function(s,l){return s+(l.toChannel||0);},0)+' channel)</span></div><div class="kpi-value" style="color:var(--purple)">'+nate+'</div><div class="kpi-sub">enriched &amp; escalated</div></div>'
     +'</div>'
