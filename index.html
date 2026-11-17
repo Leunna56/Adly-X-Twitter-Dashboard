@@ -275,8 +275,20 @@ function parseCSVLine(line){
   r.push(cur.trim());return r;
 }
 
+function splitCSVRows(text){
+  // Split CSV into rows on newlines OUTSIDE quotes (post text can contain line breaks)
+  const out=[];let cur='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(c==='"'){inQ=!inQ;cur+=c;}
+    else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&text[i+1]==='\n')i++;out.push(cur);cur='';}
+    else cur+=c;
+  }
+  if(cur)out.push(cur);
+  return out;
+}
 function parseSheet(text){
-  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const lines=splitCSVRows(text);
   let table=null,headers=null;
   const posts=[],accounts=[];
   for(const raw of lines){
@@ -403,6 +415,9 @@ function renderAccounts(posts){
     SendScale:[{h:'lestrada_8_3'},{h:'SuzieLeeu95k'}]
   };
   var activeH=new Set((posts||[]).map(function(p){var lnk=p['Post Link']||p.link||'';var m=lnk.match(/x\.com\/([^\/?#]+)/i);return m?m[1].toLowerCase():'';}).filter(Boolean));
+  var allStats={};
+  (typeof _allPosts!=='undefined'?_allPosts:[]).forEach(function(p){var lnk=p['Post Link']||p.link||'';var mm=lnk.match(/x\.com\/([^\/?#]+)/i);if(!mm)return;var k=mm[1].toLowerCase();var d=new Date(p['Date']||p.date||'');if(!allStats[k])allStats[k]={n:0,last:null};allStats[k].n++;if(!isNaN(d.getTime())&&(!allStats[k].last||d>allStats[k].last))allStats[k].last=d;});
+  var fmtLast=function(d){return d?d.toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';};
   var totalA=0,paidA=0,postedA=0,suspA=0;
   Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(a.plan)paidA++;if(a.flag)suspA++;if(activeH.has(a.h.toLowerCase()))postedA++;});});
   var grid=document.getElementById('acctGrid');
@@ -432,7 +447,9 @@ function renderAccounts(posts){
       html+='<div style="font-size:12px;margin-bottom:5px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0">';
       html+='<span title="'+(on?'Posted this period':'No posts this period')+'" style="color:'+(on?'#1D9E75':'#555')+'">&#9679;</span>';
       html+='<a href="https://x.com/'+a.h+'" target="_blank" rel="noopener" style="color:'+(a.flag?'#888':(on?'#e2e8f0':'#9aa0b8'))+';text-decoration:'+(a.flag?'line-through':'none')+'">@'+a.h+'</a>'+tags;
-      if(a.owner||a.type)html+='<span style="flex-basis:100%;padding-left:14px;font-size:10.5px;color:#6b7194">'+[a.owner,a.type].filter(Boolean).join(' &middot; ')+'</span>';
+      var st=allStats[a.h.toLowerCase()];
+      var act=st?(st.n+' post'+(st.n===1?'':'s')+' all time'+(st.last?' &middot; last '+fmtLast(st.last):'')):'no posts logged';
+      html+='<span style="flex-basis:100%;padding-left:14px;font-size:10.5px;color:#6b7194">'+[a.owner,a.type,act].filter(Boolean).join(' &middot; ')+'</span>';
       html+='</div>';
     });
     html+='</div></div>';
