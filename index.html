@@ -422,6 +422,7 @@ function renderAccounts(posts){
   Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(a.plan)paidA++;if(a.flag)suspA++;if(activeH.has(a.h.toLowerCase()))postedA++;});});
   var grid=document.getElementById('acctGrid');
   if(!grid)return;
+  grid.style.display='block'; // container has .acct-grid (4-col grid) class; this section lays out its own grid
   var BC2={PaymentKit:'#378ADD',SubDelete:'#D85A30',SendScale:'#1D9E75'};
   var tag=function(txt,c){return '<span style="font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:999px;border:1px solid '+c+';color:'+c+';white-space:nowrap">'+txt+'</span>';};
   var html='<div style="display:flex;align-items:center;gap:22px;margin-bottom:16px;flex-wrap:wrap">';
