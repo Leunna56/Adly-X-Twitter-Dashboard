@@ -74,6 +74,7 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
 .kpi-label{display:flex;align-items:center;}
 .section-header{padding:6px 0 10px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-top:1px solid var(--border);margin-top:6px;padding-top:14px;}
 </style>
+<style>.acct-brand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}@media(max-width:900px){.acct-brand-grid{grid-template-columns:1fr}.acct-brand-grid .acct-big{grid-column:auto!important}.acct-brand-grid .acct-list{grid-template-columns:1fr!important}}</style>
 </head>
 <body>
 <div class="topbar">
@@ -142,10 +143,11 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--muted);border-t
     <!-- ═══ CHARTS & TABLES (period-filtered) ═══ -->
     <div class="section-header">&#128293; Period Breakdown</div>
     <div class="card" style="margin-bottom:13px">
-      <h3 style="display:flex;align-items:center;">X Account Overview<span class="info-wrap" style="margin-left:5px;font-size:12px;"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All linked X/Twitter accounts grouped by brand, with Premium status and active account count.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Gives a quick view of your account infrastructure — which handles are driving data and which need upgrading.</div><div class="t-row"><span class="t-lbl">How computed</span>Pulled from the Account Directory tab; X Premium accounts are those with impressions data available.</div></div></span></h3>
+      <h3 style="display:flex;align-items:center;">X Account Overview<span class="info-wrap" style="margin-left:5px;font-size:12px;"><i class="info-btn">i</i><div class="info-tip"><div class="t-row"><span class="t-lbl">What</span>All X/Twitter accounts from the Account Directory, grouped by brand, with owner, account type, X Plus / Premium status and posting activity.</div><div class="t-row"><span class="t-lbl">Why it matters</span>Gives a quick view of your account infrastructure — which handles are driving data and which need upgrading.</div><div class="t-row"><span class="t-lbl">How computed</span>Account list, owners, types and X Plus / Premium / Suspended flags come from the X_Account_Directory tab. The green dot means the handle has at least one post logged in the selected period.</div></div></span></h3>
       <div style="display:flex;align-items:center;gap:18px;margin-bottom:12px;font-size:11px;color:var(--muted)">
-        <span><span style="color:#1D9E75;font-size:13px">&#9679;</span> X Premium &middot; has data this period</span>
-        <span><span style="color:#2e3250;font-size:13px">&#9679;</span> Not yet upgraded</span>
+        <span><span style="color:#1D9E75;font-size:13px">&#9679;</span> Posted this period</span>
+        <span><span style="color:#555;font-size:13px">&#9679;</span> No posts this period</span>
+        <span>Badges show X Plus / Premium and Suspended status from the Account Directory</span>
       </div>
       <div class="acct-grid" id="acctGrid"></div>
     </div>
@@ -381,30 +383,59 @@ function render(posts,accounts,m,periods,prevP){
 }
 
 function renderAccounts(posts){
-  var ACCTS={PaymentKit:[{h:'C37484Olibher',premium:true},{h:'COlibher',premium:true},{h:'Jenkins59340E'},{h:'CarlaaaaHouston'},{h:'CafirmaC90722'},{h:'MerchantRiskDsk',premium:true},{h:'ParrishL0rie'},{h:'Ronaldp38dy',premium:true},{h:'SuzieLeeu95k'},{h:'SuzannelnBf57'},{h:'SeriLee55'},{h:'AlexTamano',premium:true}],SubDelete:[{h:'buildwithpurple'},{h:'CalebSmith8oea1'},{h:'SuzieLeevj',premium:true},{h:'JenAbance'}],SendScale:[{h:'lestrada_8_3'},{h:'SuzieLeeu95k'}]};
-  var activeH=new Set(posts.map(function(p){var lnk=p['Post Link']||'';var m=lnk.match(/x\.com\/([^\/]+)\//);return m?m[1].toLowerCase():'';}).filter(Boolean));
-  var totalA=0,premA=0;
-  Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(activeH.has(a.h.toLowerCase()))premA++;});});
+  // Source: X_Account_Directory tab (PaymentKit rows updated Nov 17, 2026)
+  var ACCTS={
+    PaymentKit:[
+      {h:'PaymentK1t',type:'Official PaymentKit',owner:'Leah',plan:'X Premium'},
+      {h:'Jenkins59340E',type:'Official Brand',owner:'Olibher'},
+      {h:'COlibher',type:'Founder / Expert Voice',owner:'Olibher',plan:'X Plus'},
+      {h:'CafirmaC90722',type:'Founder / Expert Voice',owner:'Olibher'},
+      {h:'C37484Olibher',type:'Community Engagement',owner:'Olibher',plan:'X Plus'},
+      {h:'Ronaldp38dy',type:'Community Engagement',owner:'Jen',plan:'X Plus'},
+      {h:'ParrishL0rie',type:'Community Engagement',owner:'Jen',plan:'X Plus'},
+      {h:'CarlaaaaHouston',type:'Community Engagement',owner:'Jen',flag:'Suspended'},
+      {h:'SuzanneInBf57',type:'Community Engagement',owner:'Jes'},
+      {h:'SeriLee55',type:'Community Engagement',owner:'Jes'},
+      {h:'MerchantRiskDsk',type:'Community Engagement',owner:'Leah',plan:'X Plus'},
+      {h:'AlexTamano',type:'Community Engagement',owner:'Roy',plan:'X Plus'}
+    ],
+    SubDelete:[{h:'buildwithpurple'},{h:'CalebSmith8oea1'},{h:'SuzieLeevj',plan:'X Premium'},{h:'JenAbance'}],
+    SendScale:[{h:'lestrada_8_3'},{h:'SuzieLeeu95k'}]
+  };
+  var activeH=new Set((posts||[]).map(function(p){var lnk=p['Post Link']||p.link||'';var m=lnk.match(/x\.com\/([^\/?#]+)/i);return m?m[1].toLowerCase():'';}).filter(Boolean));
+  var totalA=0,paidA=0,postedA=0,suspA=0;
+  Object.keys(ACCTS).forEach(function(b){ACCTS[b].forEach(function(a){totalA++;if(a.plan)paidA++;if(a.flag)suspA++;if(activeH.has(a.h.toLowerCase()))postedA++;});});
   var grid=document.getElementById('acctGrid');
   if(!grid)return;
   var BC2={PaymentKit:'#378ADD',SubDelete:'#D85A30',SendScale:'#1D9E75'};
-  var html='<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap">';
-  html+='<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#a78bfa">'+totalA+'</div><div style="font-size:12px;color:#8b90b8">Active Accounts</div></div>';
-  html+='<div style="font-size:13px;color:#1D9E75;font-weight:600">'+premA+' on X Premium</div>';
-  html+='<div style="margin-left:auto;font-size:12px;color:#8b90b8"><span style="color:#1D9E75">&#9679;</span> X Premium &nbsp; <span style="color:#555">&#9679;</span> Not yet upgraded</div>';
-  html+='</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">';
+  var tag=function(txt,c){return '<span style="font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:999px;border:1px solid '+c+';color:'+c+';white-space:nowrap">'+txt+'</span>';};
+  var html='<div style="display:flex;align-items:center;gap:22px;margin-bottom:16px;flex-wrap:wrap">';
+  html+='<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:#a78bfa">'+totalA+'</div><div style="font-size:12px;color:#8b90b8">Accounts</div></div>';
+  html+='<div style="text-align:center"><div style="font-size:22px;font-weight:800;color:#f5b942">'+paidA+'</div><div style="font-size:12px;color:#8b90b8">On X Plus / Premium</div></div>';
+  html+='<div style="text-align:center"><div style="font-size:22px;font-weight:800;color:#1D9E75">'+postedA+'</div><div style="font-size:12px;color:#8b90b8">Posted this period</div></div>';
+  if(suspA)html+='<div style="text-align:center"><div style="font-size:22px;font-weight:800;color:#ef4444">'+suspA+'</div><div style="font-size:12px;color:#8b90b8">Suspended</div></div>';
+  html+='</div><div class="acct-brand-grid">';
   Object.keys(ACCTS).forEach(function(brand){
-    var count=ACCTS[brand].filter(function(a){return activeH.has(a.h.toLowerCase());}).length;
+    var list=ACCTS[brand];
     var color=BC2[brand]||'#555';
-    html+='<div style="background:#111827;border-radius:10px;padding:14px">';
+    var big=list.length>6;
+    html+='<div style="background:#111827;border-radius:10px;padding:14px'+(big?';grid-column:span 2':'')+'" class="'+(big?'acct-big':'')+'">';
     html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
     html+='<span style="font-size:14px;font-weight:700;color:'+color+'">'+brand+'</span>';
-    html+='<span style="font-size:20px;font-weight:800;color:'+color+'">'+count+'</span></div>';
-    ACCTS[brand].forEach(function(a){
-      var prem=activeH.has(a.h.toLowerCase());
-      html+='<div style="font-size:12px;margin-bottom:4px"><span style="color:'+(prem?'#1D9E75':'#555')+'">&#9679;</span> <span style="color:'+(prem?'#e2e8f0':'#666')+'">@'+a.h+'</span></div>';
+    html+='<span style="font-size:12px;color:#8b90b8"><b style="font-size:20px;font-weight:800;color:'+color+'">'+list.length+'</b> accounts</span></div>';
+    html+='<div style="display:grid;grid-template-columns:'+(big?'1fr 1fr':'1fr')+';gap:2px 18px" class="acct-list">';
+    list.forEach(function(a){
+      var on=activeH.has(a.h.toLowerCase());
+      var tags='';
+      if(a.flag)tags+=' '+tag(a.flag,'#ef4444');
+      if(a.plan)tags+=' '+tag(a.plan,a.plan==='X Premium'?'#f5b942':'#1D9E75');
+      html+='<div style="font-size:12px;margin-bottom:5px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0">';
+      html+='<span title="'+(on?'Posted this period':'No posts this period')+'" style="color:'+(on?'#1D9E75':'#555')+'">&#9679;</span>';
+      html+='<a href="https://x.com/'+a.h+'" target="_blank" rel="noopener" style="color:'+(a.flag?'#888':(on?'#e2e8f0':'#9aa0b8'))+';text-decoration:'+(a.flag?'line-through':'none')+'">@'+a.h+'</a>'+tags;
+      if(a.owner||a.type)html+='<span style="flex-basis:100%;padding-left:14px;font-size:10.5px;color:#6b7194">'+[a.owner,a.type].filter(Boolean).join(' &middot; ')+'</span>';
+      html+='</div>';
     });
-    html+='</div>';
+    html+='</div></div>';
   });
   html+='</div>';
   grid.innerHTML=html;
